@@ -1,0 +1,1 @@
+console.log('print a test string')
