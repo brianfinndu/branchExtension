@@ -1,6 +1,15 @@
+<!DOCTYPE html>
 <html lang="en">
-  <body>
-    <h1>Branch Browser History</h1>
-    <script src="branchTest.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Branch, Browser Extension</title>
+  <link href="branch.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<p id="dialog-box"></p>
+<h1>Branch Browser History</h1>
+<!-- NEEDS TO BE BEFORE BRANCH TEST SCRIPT FOR THIS TO WORK -->
+<script src="storage.js"></script>
+<script type="module" src="branchTest.js"></script>
+</body>
 </html>
