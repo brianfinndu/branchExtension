@@ -49,7 +49,7 @@ export class PageService {
             });
         });
     };
-    // WROTE FOR FUTURE USE BUT HAVENT IMPLEMENTED YET
+    // WROTE FOR FUTURE USE BUT HAVENT IMPLEMENTED YET WILL BE USED TO DELETE NODES POSSIBLY
     static clearPages = () => {
         return toPromise((resolve, reject) => {
             chrome.storage.local.remove([PAGES_KEY], () => {
