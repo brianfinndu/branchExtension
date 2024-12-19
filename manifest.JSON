@@ -7,5 +7,14 @@
   "action": {
     "default_popup": "branch.html",
     "default_icon": "branchLogo.png"
-  }
+  },
+
+  "icons":{
+    "16": "images/branchLogo.png"
+  },
+
+  "background":{
+    "service_worker": "background.js",
+    "type": "module"
+  },
 }
