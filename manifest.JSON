@@ -3,7 +3,7 @@
   "name": "Branch",
   "description": "Base Level Extension",
   "version": "1.0",
-  "permissions": ["tabs", "storage"],
+  "permissions": ["tabs", "storage", "webNavigation"],
   "action": {
     "default_popup": "branch.html",
     "default_icon": "branchLogo.png"
