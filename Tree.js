@@ -65,4 +65,24 @@ class Tree {
     }
     nodes[nodeId] = newNode;
   }
+
+  toJSON() {
+    const treeData = {
+      id: this.id,
+      nodeMap: this.nodeMap,
+      nodes: this.nodes.map(node => {
+        if (node) {
+          return {
+            parentId: node.parentId,
+            url: node.url,
+            timestamp: node.timestamp,
+            title: node.title,
+            favicon: node.favicon
+          };
+        }
+        return null;
+      })
+    };
+    return JSON.stringify(treeData, null, 2); // Pretty-print JSON with 2 spaces
+  }
 }
