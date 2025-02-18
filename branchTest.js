@@ -133,3 +133,12 @@ function renderTree(tree) {
         appendChildren(rootElement, rootNode.id);
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("uploadTreeFile").addEventListener("change", event => {
+        const file = event.target.files[0];
+        if (file) {
+            loadTreeFromJSON(file);
+        }
+    });
+});
