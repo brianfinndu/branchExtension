@@ -64,3 +64,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
+// Function to load a tree from a JSON file
+function loadTreeFromJSON(file) {
+    const reader = new FileReader();
+    
+    reader.onload = function(event) {
+        const jsonData = JSON.parse(event.target.result);
+        const tree = new Tree();
+        
+        // Assuming jsonData is an array of nodes
+        jsonData.forEach(nodeData => {
+            const treeNode = new TreeNode(
+                null,  // No need to pass `tree` instance here
+                nodeData.parentId,
+                nodeData.url,
+                nodeData.timestamp,
+                nodeData.title,
+                nodeData.favicon
+            );
+            tree.addNode(treeNode);
+        });
+
+        // Render the tree inside the extension
+        renderTree(tree);
+    };
+
+    reader.readAsText(file);
+}
