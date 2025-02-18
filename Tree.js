@@ -85,4 +85,5 @@ class Tree {
     };
     return JSON.stringify(treeData, null, 2); // Pretty-print JSON with 2 spaces
   }
+
 }
