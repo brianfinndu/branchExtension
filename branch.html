@@ -72,7 +72,27 @@
         </div>
     </div>
     <!-- Download Button -->
-    <button id="downloadTreeButton" class="button is-primary mt-3">Download Tree as JSON</button>
+    <style>
+      .btn {
+        background-color: DodgerBlue;
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        cursor: pointer;
+        font-size: 20px;
+      }
+      
+      /* Darker background on mouse-over */
+      .btn:hover {
+        background-color: RoyalBlue;
+      }
+      </style>
+      </head>
+      <body>
+      
+      <button id="downloadTreeButton" class="btn">
+        <i class="fa fa-download"></i> Download
+      </button>
     </div>
     <script src="Tree.js"></script>
     <script src="TreeNode.js"></script>

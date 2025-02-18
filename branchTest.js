@@ -36,27 +36,30 @@ function downloadTreeAsJSON(tree, filename = 'tree.json') {
   }
 
   // Function to create a Tree object from the HTML structure
-function createTreeFromHTML() {
+  function createTreeFromHTML() {
     const tree = new Tree();
     const nodes = document.querySelectorAll('.tree-node');
-  
+
     nodes.forEach(node => {
-      const id = parseInt(node.getAttribute('data-id'));
-      const parentId = parseInt(node.getAttribute('data-parent-id'));
-      const title = node.querySelector('.title').textContent;
-      const url = "https://example.com"; // Placeholder URL
-      const timestamp = new Date().toISOString(); // Current timestamp
-      const favicon = "https://example.com/favicon.ico"; // Placeholder favicon
-  
-      const treeNode = new TreeNode(parentId, url, timestamp, title, favicon);
-      tree.addNode(treeNode);
+        const parentId = parseInt(node.getAttribute('data-parent-id')) || 0; // Default to root if missing
+        const title = node.querySelector('.title').textContent;
+        const url = "https://example.com"; // Placeholder URL
+        const timestamp = new Date().toISOString(); // Current timestamp
+        const favicon = "https://example.com/favicon.ico"; // Placeholder favicon
+
+        const treeNode = new TreeNode(null, parentId, url, timestamp, title, favicon);
+        tree.addNode(treeNode);
     });
-  
+
     return tree;
-  }
+}
+
   
 // Event listener for the download button
-document.getElementById('downloadTreeButton').addEventListener('click', () => {
-    const tree = createTreeFromHTML(); // Create the tree from the HTML structure
-    downloadTreeAsJSON(tree); // Download the tree as a JSON file
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('downloadTreeButton').addEventListener('click', () => {
+      const tree = createTreeFromHTML();
+      downloadTreeAsJSON(tree);
+    });
   });
+  
