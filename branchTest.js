@@ -55,9 +55,8 @@ function createTreeFromHTML() {
     return tree;
   }
   
-  // Example usage:
-  // Assuming `tree` is an instance of your Tree class
-  document.getElementById('downloadTreeButton').addEventListener('click', () => {
-    const tree = new Tree(); // Replace this with your actual tree instance
-    downloadTreeAsJSON(tree);
+// Event listener for the download button
+document.getElementById('downloadTreeButton').addEventListener('click', () => {
+    const tree = createTreeFromHTML(); // Create the tree from the HTML structure
+    downloadTreeAsJSON(tree); // Download the tree as a JSON file
   });
