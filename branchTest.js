@@ -34,6 +34,26 @@ function downloadTreeAsJSON(tree, filename = 'tree.json') {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
+
+  // Function to create a Tree object from the HTML structure
+function createTreeFromHTML() {
+    const tree = new Tree();
+    const nodes = document.querySelectorAll('.tree-node');
+  
+    nodes.forEach(node => {
+      const id = parseInt(node.getAttribute('data-id'));
+      const parentId = parseInt(node.getAttribute('data-parent-id'));
+      const title = node.querySelector('.title').textContent;
+      const url = "https://example.com"; // Placeholder URL
+      const timestamp = new Date().toISOString(); // Current timestamp
+      const favicon = "https://example.com/favicon.ico"; // Placeholder favicon
+  
+      const treeNode = new TreeNode(parentId, url, timestamp, title, favicon);
+      tree.addNode(treeNode);
+    });
+  
+    return tree;
+  }
   
   // Example usage:
   // Assuming `tree` is an instance of your Tree class
