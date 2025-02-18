@@ -1,3 +1,5 @@
+
+// for this to work i had to go into chrome extenstions then do keyboard shortcuts and set show homepage preview to ctr +m
 chrome.commands.onCommand.addListener((command) => {
     if (command === "show_preview") {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -12,7 +14,7 @@ chrome.commands.onCommand.addListener((command) => {
         });
     }
 });
-// allows the page to be turned off with another press of ctrl+m
+
 function toggleBranch() {
     let iframe = document.getElementById("branch-preview");
 
@@ -20,7 +22,7 @@ function toggleBranch() {
         iframe.remove(); // Hide if already open
         return;
     }
-// details to create size and spot of the preview can adjust later if needed
+
     iframe = document.createElement("iframe");
     iframe.src = chrome.runtime.getURL("branch.html");
     iframe.style.position = "fixed";
@@ -49,5 +51,3 @@ function toggleBranch() {
 
     document.body.appendChild(iframe);
 }
-
-

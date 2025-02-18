@@ -3,7 +3,7 @@
   "name": "Branch",
   "description": "Base Level Extension",
   "version": "1.0",
-  "permissions": ["tabs", "storage", "webNavigation", "activeTab", "scripting"],
+  "permissions": ["tabs", "storage", "webNavigation", "activeTab", "scripting", "commands", "windows"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "branch.html",
