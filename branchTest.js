@@ -91,3 +91,45 @@ function loadTreeFromJSON(file) {
 
     reader.readAsText(file);
 }
+
+function renderTree(tree) {
+    const container = document.querySelector("#treeContainer");
+    container.innerHTML = ""; // Clear existing tree
+
+    function createNodeElement(node) {
+        const nodeElement = document.createElement("div");
+        nodeElement.classList.add("box", "p-3");
+        nodeElement.setAttribute("data-id", node.id);
+        nodeElement.setAttribute("data-parent-id", node.parentId);
+
+        nodeElement.innerHTML = `
+            <h1 class="title is-size-6">${node.title}</h1>
+            <div class="container">
+                <div class="flex-container">
+                    <p class="is-size-7">URL: <a href="${node.url}" target="_blank">${node.url}</a></p>
+                    <p class="is-size-7">Last Visited: ${new Date(node.timestamp).toLocaleString()}</p>
+                </div>
+            </div>
+        `;
+        return nodeElement;
+    }
+
+    // Find root nodes (those with parentId = 0)
+    const rootNodes = tree.nodes.filter(node => node.parentId === 0);
+
+    function appendChildren(parentElement, parentId) {
+        tree.nodes
+            .filter(node => node.parentId === parentId)
+            .forEach(childNode => {
+                const childElement = createNodeElement(childNode);
+                parentElement.appendChild(childElement);
+                appendChildren(childElement, childNode.id);
+            });
+    }
+
+    rootNodes.forEach(rootNode => {
+        const rootElement = createNodeElement(rootNode);
+        container.appendChild(rootElement);
+        appendChildren(rootElement, rootNode.id);
+    });
+}
