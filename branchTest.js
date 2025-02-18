@@ -53,8 +53,6 @@ function downloadTreeAsJSON(tree, filename = 'tree.json') {
 
     return tree;
 }
-
-
   
 // Event listener for the download button
 document.addEventListener('DOMContentLoaded', () => {
