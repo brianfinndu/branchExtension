@@ -35,14 +35,14 @@ function downloadTreeAsJSON(tree, filename = 'tree.json') {
     URL.revokeObjectURL(url);
   }
 
-  // Function to create a Tree object from the HTML structure
   function createTreeFromHTML() {
     const tree = new Tree();
-    const nodes = document.querySelectorAll('.tree-node');
+    const nodes = document.querySelectorAll('.box'); // Selects all tree nodes
 
     nodes.forEach(node => {
+        const id = parseInt(node.getAttribute('data-id'));
         const parentId = parseInt(node.getAttribute('data-parent-id')) || 0; // Default to root if missing
-        const title = node.querySelector('.title').textContent;
+        const title = node.querySelector("h1").textContent.trim();
         const url = "https://example.com"; // Placeholder URL
         const timestamp = new Date().toISOString(); // Current timestamp
         const favicon = "https://example.com/favicon.ico"; // Placeholder favicon
@@ -53,6 +53,7 @@ function downloadTreeAsJSON(tree, filename = 'tree.json') {
 
     return tree;
 }
+
 
   
 // Event listener for the download button
