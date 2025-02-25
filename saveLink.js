@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     viewSavedButton.textContent = "View Saved URLs";
     document.body.appendChild(viewSavedButton);
 
+    // Get the active tab's URL and title
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
         if (tabs.length > 0) {
             const currentTab = tabs[0];
@@ -20,21 +21,22 @@ document.addEventListener("DOMContentLoaded", () => {
             dialogBox.textContent = `Current Tab URL: ${url}`;
             console.log(`Current Tab URL: ${url}, Title: ${title}`);
 
-            // Save the URL when the button is clicked
-            saveButton.addEventListener("click", async () => {
-                chrome.storage.sync.get(["savedPages"], (data) => {
+            // Save URL Button Click
+            saveButton.addEventListener("click", () => {
+                chrome.storage.local.get(["savedPages"], (data) => {
                     let savedPages = data.savedPages || [];
                     savedPages.push({ title, url });
 
-                    chrome.storage.sync.set({ savedPages }, () => {
-                        alert(`URL saved successfully! Total saved URLs: ${savedPages.length}`);
+                    chrome.storage.local.set({ savedPages }, () => {
+                        console.log(`URL saved: ${url}`);
+                        alert(`URL saved! Total saved URLs: ${savedPages.length}`);
                     });
                 });
             });
 
-            // Display saved URLs when the button is clicked
-            viewSavedButton.addEventListener("click", async () => {
-                chrome.storage.sync.get(["savedPages"], (data) => {
+            // View Saved URLs Button Click
+            viewSavedButton.addEventListener("click", () => {
+                chrome.storage.local.get(["savedPages"], (data) => {
                     const savedPages = data.savedPages || [];
 
                     dialogBox.innerHTML = "<h3>Saved URLs:</h3>";

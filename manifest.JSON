@@ -1,14 +1,29 @@
 {
   "manifest_version": 3,
-  "name": "Branch",
-  "description": "Base Level Extension",
+  "name": "Branch Extension",
   "version": "1.0",
+  "description": "Save and sync URLs using Google Drive",
   "permissions": [
-    "tabs",
-    "storage"
+    "identity",
+    "identity.email",
+    "storage",
+    "activeTab",
+    "scripting"
   ],
+  "oauth2": {
+    "client_id": "Y532808127148-hajf36cbc9r7da1r8kr6nsobkedapb4g.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/drive.appdata",
+      "https://www.googleapis.com/auth/drive.file",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
+  },
+  "background": {
+    "service_worker": "googleDrive.js",
+    "type": "module"
+  },
   "action": {
-    "default_popup": "branch.html",
-    "default_icon": "branchLogo.png"
+    "default_popup": "branch.html"
   }
 }
+
