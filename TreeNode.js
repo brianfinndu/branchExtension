@@ -1,5 +1,6 @@
 class TreeNode {
-  constructor(parentId, url, timestamp, title, favicon) {
+  constructor(id, parentId, url, timestamp, title, favicon) {
+    this.id = id;
     this.parentId = parentId;
     this.url = url;
     this.timestamp = timestamp;
@@ -7,3 +8,5 @@ class TreeNode {
     this.favicon = favicon;
   }
 }
+
+export { TreeNode };
