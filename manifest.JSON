@@ -10,8 +10,11 @@
     "activeTab",
     "scripting"
   ],
+  "host_permissions": [
+    "https://www.googleapis.com/*"
+  ],
   "oauth2": {
-    "client_id": "Y532808127148-hajf36cbc9r7da1r8kr6nsobkedapb4g.apps.googleusercontent.com",
+    "client_id": "532808127148-i1vm5tplqemsog8guuf0fkmgfdjck3co.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/drive.appdata",
       "https://www.googleapis.com/auth/drive.file",
@@ -19,11 +22,17 @@
     ]
   },
   "background": {
-    "service_worker": "googleDrive.js",
-    "type": "module"
+    "service_worker": "googleDrive.js"
   },
   "action": {
     "default_popup": "branch.html"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["saveLink.js"]
+    }
+  ]
 }
+
 
