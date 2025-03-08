@@ -1,26 +1,9 @@
-import { TreeNode } from "./TreeNode.js";
 import { Tree } from "./Tree.js";
+import { TreeNode } from "./TreeNode.js";
 
-/*
+let activeTree = new Tree(0, {}, []);
 
-Background script:
-- Handle pages opened from new tab interface
-- Handle pages opened from right-click > open in new tab
-
-document.referrer will be empty in this case
-Event loop (new tab):
-- Get TreeNode info from new page
-- Parent ID will be 0 (root of tree)
-- Add the newly-created node to the tree
-
-Event loop (right click):
-- Get mostRecentLinkClickPageId from chrome.storage.session
-- Get TreeNode info from new page
-- Add the newly-created node to the tree
-- Implementing later
-
-*/
-
+// Allow content scripts to access tab info
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.session.setAccessLevel({
     accessLevel: "TRUSTED_AND_UNTRUSTED_CONTEXTS",
@@ -28,54 +11,50 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log("Permissions for content scripts modified.");
 });
 
+// When script starts, initialize an empty tree
+// TO-DO: change this to load tree from persistent storage
 chrome.runtime.onStartup.addListener(function () {
   console.log("Startup script launching.");
-  const emptySet = new Set();
-  const newTree = {
-    id: 0,
-    maxId: 0,
-    nodeMap: { 0: [] },
-    nodes: [
-      {
-        id: 0,
-        parentId: -1,
-        url: "",
-        timestamp: new Date(),
-        title: "",
-        favicon: "",
-      },
-    ],
-  };
-  console.log(newTree);
-  chrome.storage.session.set({ activeTree: newTree });
-  chrome.storage.session.set({ previousPageId: 0 });
-  chrome.storage.session.get("activeTree", function (result) {
-    console.log(result.activeTree);
-  });
+  activeTree = new Tree(0, {}, []);
 });
 
-let keepAlivePort = null;
+// Keep script alive
 
-function keepAlive() {
-  if (keepAlivePort) {
-    keepAlivePort.disconnect();
-  }
-
-  keepAlivePort = chrome.runtime.connect({ name: "keepBranchAlive" });
-  keepAlivePort.onDisconnect.addListener(keepAlive);
-
-  setInterval(() => {
-    if (keepAlivePort) {
-      keepAlivePort.postMessage({ type: "keepBranchAlive" });
-    }
-  }, 240000);
-}
-
-chrome.runtime.onConnect.addListener((port) => {
-  if (port.name === "keepBranchAlive") {
-    keepAlivePort = port;
-    port.onDisconnect.addListener(keepAlive);
-  }
-});
-
+const keepAlive = () => setInterval(chrome.runtime.getPlatformInfo, 20e3);
+chrome.runtime.onStartup.addListener(keepAlive);
 keepAlive();
+
+// Handle forced script unload
+
+chrome.runtime.onSuspend.addListener(() => {
+  console.log("Extension unloading.");
+  // save tree to persistent storage
+});
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  // Handle messages from content scripts requesting node add
+  if (message.action === "addNode") {
+    let nodeData = message.nodeData;
+    let newNode = new TreeNode(
+      nodeData.id,
+      nodeData.parentId,
+      nodeData.url,
+      nodeData.timestamp,
+      nodeData.title,
+      nodeData.favicon
+    );
+    activeTree.addNode(newNode);
+    return false;
+  }
+
+  // Handle message from content scripts requesting unique Id
+  if (message.action === "getId") {
+    console.log("ID request received.");
+    let uniqueId = activeTree.getUniqueId();
+    console.log("Sending ID " + uniqueId);
+    sendResponse({ uniqueId: uniqueId });
+    return false;
+  }
+
+  // Handle messages from Branch requesting node manipulation
+});
