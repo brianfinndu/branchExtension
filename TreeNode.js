@@ -1,4 +1,4 @@
-class TreeNode {
+export class TreeNode {
   constructor(id, parentId, url, timestamp, title, favicon) {
     this.id = id;
     this.parentId = parentId;
@@ -8,5 +8,3 @@ class TreeNode {
     this.favicon = favicon;
   }
 }
-
-export { TreeNode };
