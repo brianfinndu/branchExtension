@@ -53,3 +53,29 @@ chrome.runtime.onStartup.addListener(function () {
     console.log(result.activeTree);
   });
 });
+
+let keepAlivePort = null;
+
+function keepAlive() {
+  if (keepAlivePort) {
+    keepAlivePort.disconnect();
+  }
+
+  keepAlivePort = chrome.runtime.connect({ name: "keepBranchAlive" });
+  keepAlivePort.onDisconnect.addListener(keepAlive);
+
+  setInterval(() => {
+    if (keepAlivePort) {
+      keepAlivePort.postMessage({ type: "keepBranchAlive" });
+    }
+  }, 240000);
+}
+
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name === "keepBranchAlive") {
+    keepAlivePort = port;
+    port.onDisconnect.addListener(keepAlive);
+  }
+});
+
+keepAlive();

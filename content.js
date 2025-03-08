@@ -89,3 +89,11 @@ document.addEventListener("click", function (event) {
   chrome.storage.session.set({ previousPageId: pageId });
   // give 200ms for the page ID to be stored, then navigate
 });
+
+const port = chrome.runtime.connect({ name: "keepBranchAlive" });
+
+port.onMessage.addListener((msg) => {
+  if (msg.type === "keepBranchAlive") {
+    port.postMessage({ type: "acknowledged" });
+  }
+});
