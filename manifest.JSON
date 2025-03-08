@@ -9,12 +9,21 @@
     "default_icon": "branchLogo.png"
   },
 
-  "icons":{
-    "16": "images/branchLogo.png"
+  "icons": {
+    "16": "./branchLogo.png"
   },
 
-  "background":{
+  "background": {
     "service_worker": "background.js",
     "type": "module"
   },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "type": "module"
+    }
+  ]
 }
