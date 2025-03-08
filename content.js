@@ -25,75 +25,67 @@ event loop (right click):
 
 */
 
-document.addEventListener("DOMContentLoaded", function () {
-  chrome.storage.session.get("activeTree", function (result1) {
-    // fetch the tree
-    let activeTree = result1.activeTree;
-    console.log("Tree fetched.");
-    console.log(result1);
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    console.log("Requesting ID");
+    const response = await chrome.runtime.sendMessage({ action: "getId" });
+    console.log("Received ID: " + response.uniqueId);
 
-    // add a meta tag to the page containing the node ID
-    const metaTag = document.createElement("meta");
-    metaTag.name = "page-id";
-    metaTag.content = activeTree.nodes.length;
-    document.head.appendChild(metaTag);
+    if (response && response.uniqueId !== undefined) {
+      // add a meta tag to the page containing the node ID
+      const metaTag = document.createElement("meta");
+      metaTag.name = "page-id";
+      metaTag.content = response.uniqueId;
+      document.head.appendChild(metaTag);
 
-    chrome.storage.session.get("previousPageId", function (result2) {
-      // fetch the parent ID (ID from page where link was clicked)
-      let parentId = result2.previousPageId;
-      // if new page was not opened by a link click
-      if (document.referrer === "") {
-        console.log("Parent ID set to 0.");
-        parentId = 0;
-      }
-      console.log("Previous page ID fetched.");
-      console.log(result2.previousPageId);
-      // fetch the URL of the favicon from among the link tags
-      let faviconUrl = "";
-      const linkTags = document.getElementsByTagName("link");
-      for (let link of linkTags) {
-        if (link.rel === "icon" || link.rel === "shortcut icon") {
-          faviconUrl = link.href;
-          break;
+      chrome.storage.session.get("previousPageId", function (result) {
+        // fetch the parent ID (ID from page where link was clicked)
+        let parentId = result.previousPageId;
+        // if new page was not opened by a link click
+        if (document.referrer === "") {
+          console.log("Parent ID set to 0.");
+          parentId = 0;
         }
-      }
+        console.log("Previous page ID fetched.");
+        console.log(result.previousPageId);
+        // fetch the URL of the favicon from among the link tags
+        let faviconUrl = "";
+        const linkTags = document.getElementsByTagName("link");
+        for (let link of linkTags) {
+          if (link.rel === "icon" || link.rel === "shortcut icon") {
+            faviconUrl = link.href;
+            break;
+          }
+        }
 
-      // construct a new node from the previous info
-      let newNode = {
-        id: activeTree.nodes.length,
-        parentId: parentId,
-        url: document.location.href,
-        timestamp: new Date(),
-        title: document.title,
-        favicon: faviconUrl,
-      };
+        // construct a new node from the previous info
+        let newNode = {
+          id: parseInt(response.uniqueId),
+          parentId: parentId,
+          url: document.location.href,
+          timestamp: new Date().toISOString(),
+          title: document.title,
+          favicon: faviconUrl,
+        };
 
-      // add the node to the tree
-      activeTree.nodes.push(newNode);
-      activeTree.nodeMap[newNode.id] = [];
-      activeTree.nodeMap[newNode.parentId].push(newNode.id);
+        console.log(newNode);
 
-      console.log(activeTree);
-
-      // write the tree back to chrome.storage.session
-      chrome.storage.session.set({ activeTree: activeTree });
-    });
-  });
+        // send message to background script to add the node to the tree
+        chrome.runtime.sendMessage({ action: "addNode", nodeData: newNode });
+      });
+    } else {
+      console.warn("No ID received.");
+    }
+  } catch (error) {
+    console.error("Error with ID", error);
+  }
 });
 
 // general click event listener for entire page
 document.addEventListener("click", function (event) {
   // get the page id from the meta element named page-id inside head
   const pageId = document.querySelector('head meta[name="page-id"]').content;
-  console.log(pageId);
   chrome.storage.session.set({ previousPageId: pageId });
-  // give 200ms for the page ID to be stored, then navigate
 });
 
-const port = chrome.runtime.connect({ name: "keepBranchAlive" });
-
-port.onMessage.addListener((msg) => {
-  if (msg.type === "keepBranchAlive") {
-    port.postMessage({ type: "acknowledged" });
-  }
-});
+// listen for messages relating to node closure
