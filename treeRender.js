@@ -1,12 +1,40 @@
-// write function for depth-first traversal
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    // request tree from background script
+    const response = await chrome.runtime.sendMessage({ action: "getTree" });
 
-// tree rendered as unordered list
-// each item is a list item followed by a possibly empty unordered list
+    console.log(response.activeTree.nodeMap);
 
-document.getElementById("render-btn").addEventListener("click", renderTree);
+    document.body.appendChild(
+      traverse("0", response.activeTree.nodeMap, response.activeTree.nodes)
+    );
+  } catch (error) {
+    console.error("Error with rendering", error);
+  }
+});
 
-var depth = 0;
-var nodeList = [];
+function traverse(rootIndex, nodeMap, nodes) {
+  let ul = document.createElement("ul");
+  let li = document.createElement("li");
+  li.textContent = nodes[parseInt(rootIndex)].title;
+  ul.appendChild(li);
+
+  if (nodeMap[rootIndex].length === 0) {
+    let innerUl = document.createElement("ul");
+    li.appendChild(innerUl);
+    return ul;
+  }
+
+  console.log(typeof nodeMap[rootIndex]);
+
+  nodeMap[rootIndex].forEach((id) => {
+    li.appendChild(traverse(id, nodeMap, nodes));
+  });
+
+  return ul;
+}
+
+/*
 
 async function renderTree() {
   // Reset recursion values
@@ -51,11 +79,5 @@ function dfs(id, map, list) {
 
   depth -= 1;
 }
-
-/*
-
-L Wikipedia
-L____ Pasadena
-L________ LA County
 
 */

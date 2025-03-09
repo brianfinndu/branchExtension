@@ -4,18 +4,20 @@ import { TreeNode } from "./TreeNode.js";
 
 export class Tree {
   // nodes: an array of nodes, accessible by id
-  // nodeMap: an object of int-as-a-string:set(int-as-a-string) forming the tree
+  // nodeMap: an object of int-as-a-string:[int-as-a-string] forming the tree
   // freedIds: ids released by node deletion
   constructor(id, nodeMap, nodes) {
     this.id = id;
     this.freedIds = [];
     if (Object.keys(nodeMap).length === 0) {
-      this.nodeMap = { 0: new Set() };
+      this.nodeMap = { 0: [] };
     } else {
       this.nodeMap = nodeMap;
     }
     if (nodes.length === 0) {
-      this.nodes = [new TreeNode(0, -1, "Root", new Date(), "Root", "")];
+      this.nodes = [
+        new TreeNode(0, -1, "Root", new Date().toISOString(), "Root", ""),
+      ];
     } else {
       this.nodes = nodes;
     }
@@ -32,8 +34,8 @@ export class Tree {
   addNode(newNode) {
     console.log(newNode);
     this.nodes[newNode.id] = newNode;
-    this.nodeMap[newNode.id.toString()] = new Set();
-    this.nodeMap[newNode.parentId.toString()].add(newNode.id.toString());
+    this.nodeMap[newNode.id.toString()] = [];
+    this.nodeMap[newNode.parentId.toString()].push(newNode.id.toString());
   }
 
   // TO-DO: check if nodeId is in freedIds (invalid)
@@ -45,12 +47,28 @@ export class Tree {
     }
 
     let temp = nodes[nodeId];
-    this.nodes[nodeId] = new TreeNode(-1, -1, "", new Date(), "", "");
-    this.freedIds.append(nodeId);
-    this.nodeMap[temp.parentId.toString()].delete(nodeId.toString());
-    this.nodeMap[nodeId.toString()].foreach((id) =>
-      nodeMap[temp.parentId.toString()].add(id.toString())
+    this.nodes[nodeId] = new TreeNode(
+      -1,
+      -1,
+      "",
+      new Date().toISOString(),
+      "",
+      ""
     );
+    this.freedIds.append(nodeId);
+
+    // remove node from its parent's nodeMap
+    const index = this.nodeMap[temp.parentId.toString()].indexOf(
+      nodeId.toString()
+    );
+    this.nodeMap[temp.parentId.toString()].splice(index, 1);
+
+    // add its children to the parent's nodeMap
+    this.nodeMap[nodeId.toString()].foreach((id) =>
+      nodeMap[temp.parentId.toString()].push(id.toString())
+    );
+
+    // delete its nodeMap entry
     delete nodeMap[nodeId.toString()];
   }
 
@@ -66,8 +84,15 @@ export class Tree {
       return;
     }
     let temp = nodes[nodeId];
-    this.nodeMap[temp.parentId.toString()].delete(nodeId.toString());
-    nodeMap[newParentId.toString()].add(nodeId.toString());
+
+    // remove node from its former parent's nodeMap
+    const index = this.nodeMap[temp.parentId.toString()].indexOf(
+      nodeId.toString()
+    );
+    this.nodeMap[temp.parentId.toString()].splice(index, 1);
+
+    // add node to its new parent's nodeMap
+    nodeMap[newParentId.toString()].push(nodeId.toString());
   }
 
   getNode(nodeId) {

@@ -56,5 +56,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     return false;
   }
 
+  // Handle messages from Branch requesting The Tree
+  if (message.action === "getTree") {
+    console.log("Sending tree as object");
+    sendResponse({ activeTree: activeTree });
+  }
+
   // Handle messages from Branch requesting node manipulation
 });
