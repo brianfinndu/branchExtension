@@ -1,4 +1,4 @@
-// TO DO: transition to a Map object (guarantees iteration in insertion order)
+// TO-DO: only use serializable data structures when writing to persistent storage
 
 import { TreeNode } from "./TreeNode.js";
 
@@ -9,7 +9,7 @@ export class Tree {
   constructor(id, nodeMap, nodes) {
     this.id = id;
     this.freedIds = [];
-    if (Object.keys(obj).length === 0) {
+    if (Object.keys(nodeMap).length === 0) {
       this.nodeMap = { 0: new Set() };
     } else {
       this.nodeMap = nodeMap;
@@ -25,14 +25,15 @@ export class Tree {
     if (this.freedIds.length > 0) {
       return this.freedIds.pop();
     } else {
-      return this.nodes.length + 1;
+      return this.nodes.length;
     }
   }
 
   addNode(newNode) {
+    console.log(newNode);
     this.nodes[newNode.id] = newNode;
-    this.nodeMap[str(newNode.id)] = set();
-    this.nodeMap[str(newNode.parentId)].add(str(newNode.id));
+    this.nodeMap[newNode.id.toString()] = new Set();
+    this.nodeMap[newNode.parentId.toString()].add(newNode.id.toString());
   }
 
   // TO-DO: check if nodeId is in freedIds (invalid)
@@ -46,11 +47,11 @@ export class Tree {
     let temp = nodes[nodeId];
     this.nodes[nodeId] = new TreeNode(-1, -1, "", new Date(), "", "");
     this.freedIds.append(nodeId);
-    this.nodeMap[str(temp.parentId)].delete(str(nodeId));
-    this.nodeMap[str(nodeId)].foreach((id) =>
-      nodeMap[str(temp.parentId)].add(str(id))
+    this.nodeMap[temp.parentId.toString()].delete(nodeId.toString());
+    this.nodeMap[nodeId.toString()].foreach((id) =>
+      nodeMap[temp.parentId.toString()].add(id.toString())
     );
-    delete nodeMap[str(nodeId)];
+    delete nodeMap[nodeId.toString()];
   }
 
   // TO-DO: move node position within same parent
@@ -65,8 +66,8 @@ export class Tree {
       return;
     }
     let temp = nodes[nodeId];
-    this.nodeMap[str(temp.parentId)].delete(str(nodeId));
-    nodeMap[str(newParentId)].add(str(nodeId));
+    this.nodeMap[temp.parentId.toString()].delete(nodeId.toString());
+    nodeMap[newParentId.toString()].add(nodeId.toString());
   }
 
   getNode(nodeId) {
