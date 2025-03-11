@@ -6,7 +6,7 @@
   "permissions": ["tabs", "storage", "webNavigation"],
   "action": {
     "default_popup": "branch.html",
-    "default_icon": "branchLogo.png"
+    "default_icon": "images/branchLogo.png"
   },
 
   "icons":{
@@ -16,5 +16,5 @@
   "background":{
     "service_worker": "background.js",
     "type": "module"
-  },
+  }
 }
