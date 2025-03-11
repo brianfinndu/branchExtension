@@ -3,18 +3,22 @@
   "name": "Branch",
   "description": "Base Level Extension",
   "version": "1.0",
-  "permissions": ["tabs", "storage", "webNavigation"],
+  "permissions": ["tabs", "storage", "webNavigation","identity", "storage"],
+  "oauth2": {
+    "client_id": "532808127148-i1vm5tplqemsog8guuf0fkmgfdjck3co.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/drive.file"]
+  },
   "action": {
     "default_popup": "branch.html",
     "default_icon": "branchLogo.png"
   },
 
   "icons":{
-    "16": "images/branchLogo.png"
+    "16": "branchLogo.png"
   },
 
   "background":{
     "service_worker": "background.js",
     "type": "module"
-  },
+  }
 }
