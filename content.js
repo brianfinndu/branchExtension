@@ -6,7 +6,7 @@ content script which runs on every page after load to
 - listen for page events
 - add itself to the tree
 - add page metadata
-- communicate with background script / storage as necessary
+- communicate with background script as necessary
 
 content scripts
 - handle links clicked directly on a page
@@ -82,10 +82,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 // general click event listener for entire page
-document.addEventListener("click", function (event) {
-  // get the page id from the meta element named page-id inside head
-  const pageId = document.querySelector('head meta[name="page-id"]').content;
-  chrome.storage.session.set({ previousPageId: pageId });
+document.addEventListener("visibilityChange", () => {
+  // if the page has just become focused
+  if (document.visibilityState === "visible") {
+    // get the page id from the meta element named page-id inside head
+    const pageId = document.querySelector('head meta[name="page-id"]').content;
+    chrome.storage.session.set({ previousPageId: pageId });
+  }
 });
 
 // listen for messages relating to node closure
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "nodeDeleted") {
+    let metaTag = document.querySelector('head meta[name="page-id"]');
+    if (metaTag) {
+      if (metaTag.content === message.deletedId) {
+        metaTag.content = message.newParentId;
+      }
+    } else {
+      console.warn("No meta tag found. Creating meta tag.");
+
+      metaTag = document.createElement("meta");
+      metaTag.name = "page-id";
+      metaTag.content = message.newParentId;
+      document.head.appendChild(metaTag);
+    }
+  }
+});
