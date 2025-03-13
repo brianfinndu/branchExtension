@@ -70,6 +70,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         console.log(newNode);
 
+        if (document.visibilityState === "visible") {
+          console.log(
+            "Page has loaded and is visible. Setting previousPageId."
+          );
+          chrome.storage.session.set({ previousPageId: response.uniqueId });
+        }
+
         // send message to background script to add the node to the tree
         chrome.runtime.sendMessage({ action: "addNode", nodeData: newNode });
       });
@@ -82,8 +89,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 // general click event listener for entire page
-document.addEventListener("visibilityChange", () => {
+document.addEventListener("visibilitychange", () => {
   // if the page has just become focused
+  console.log("Page has become visible. Setting previousPageId.");
   if (document.visibilityState === "visible") {
     // get the page id from the meta element named page-id inside head
     const pageId = document.querySelector('head meta[name="page-id"]').content;
