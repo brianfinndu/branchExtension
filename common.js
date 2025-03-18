@@ -1,16 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-    chrome.storage.sync.get("darkMode", function (data) {
-        if (data.darkMode) {
-            document.documentElement.classList.add("dark-mode");
-            document.getElementById("text2").textContent = "dark mode"; // Update UI
-        }
-    });
+    // Simulate stored value (since chrome.storage.sync doesn't work outside Chrome extensions)
+    const isDarkMode = localStorage.getItem("darkMode") === "true";
+    
+    if (isDarkMode) {
+        document.documentElement.classList.add("dark-mode");
+        document.getElementById("text2").textContent = "dark mode";
+    }
 
-    // Listen for changes from settings.js
-    chrome.runtime.onMessage.addListener((message) => {
-        if (message.action === "toggleDarkMode") {
-            document.documentElement.classList.toggle("dark-mode", message.enabled);
-            document.getElementById("text2").textContent = message.enabled ? "dark mode" : "light mode";
-        }
+    // Listen for clicks on the toggle (without Chrome messaging)
+    document.getElementById("text2").addEventListener("click", function () {
+        const newMode = document.documentElement.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", newMode);
+        document.getElementById("text2").textContent = newMode ? "dark mode" : "light mode";
     });
 });
