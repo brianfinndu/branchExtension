@@ -45,7 +45,6 @@ export class Tree {
       console.log("Invalid Id.");
       return;
     }
-
     let temp = nodes[nodeId];
     this.nodes[nodeId] = new TreeNode(
       -1,
@@ -108,6 +107,27 @@ export class Tree {
       console.log("Invalid Id.");
       return;
     }
-    nodes[nodeId] = newNode;
+    this.nodes[nodeId] = newNode;
+  }
+
+  toJSON() {
+    const treeData = {
+      id: this.id,
+      nodeMap: Object.fromEntries(
+        Object.entries(this.nodeMap).map(([key, value]) => [key, [...value]])
+      ),
+      nodes: this.nodes.map(node =>
+        node
+          ? {
+              parentId: node.parentId,
+              url: node.url,
+              timestamp: node.timestamp,
+              title: node.title,
+              favicon: node.favicon
+            }
+          : null
+      )
+    };
+    return JSON.stringify(treeData, null, 2);
   }
 }
