@@ -1,25 +1,3 @@
-// function postKey() {
-//   let devKey = prompt("Please enter an ID.");
-//   let devName = prompt("Please enter your name.");
-
-//   let obj = {};
-//   obj[devKey] = devName;
-
-//   chrome.storage.sync
-//     .set(obj)
-//     .then(() => {
-//       console.log("Key value pair created.");
-//     })
-//     .then(() => {
-//       console.log(devKey);
-//       chrome.storage.sync.get([devKey.toString()]).then((result) => {
-//         console.log("Result is " + JSON.stringify(result));
-//       });
-//     });
-// }
-
-// postKey();
-
 // Function to download the tree as a JSON file
 function downloadTreeAsJSON(tree, filename = 'tree.json') {
     const jsonString = tree.toJSON();
@@ -90,6 +68,7 @@ function loadTreeFromJSON(file) {
     reader.readAsText(file);
 }
 
+/*
 function renderTree(tree) {
     const container = document.querySelector("#treeContainer");
     container.innerHTML = ""; // Clear existing tree
@@ -131,6 +110,7 @@ function renderTree(tree) {
         appendChildren(rootElement, rootNode.id);
     });
 }
+*/
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("uploadTreeFile").addEventListener("change", event => {
@@ -139,4 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
             loadTreeFromJSON(file);
         }
     });
+  
+document.getElementById("render-page-btn").addEventListener("click", () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("treeRender.html") });
 });

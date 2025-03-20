@@ -3,18 +3,27 @@
   "name": "Branch",
   "description": "Base Level Extension",
   "version": "1.0",
-  "permissions": ["tabs", "storage", "webNavigation"],
+  "permissions": ["tabs", "storage", "webNavigation", "scripting"],
   "action": {
     "default_popup": "branch.html",
-    "default_icon": "branchLogo.png"
+    "default_icon": "./images/branchLogo.png"
   },
 
-  "icons":{
-    "16": "branchLogo.png"
+  "icons": {
+    "16": "./images/branchLogo.png"
   },
 
-  "background":{
+  "background": {
     "service_worker": "background.js",
     "type": "module"
-  }
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "type": "module"
+    }
+  ]
 }

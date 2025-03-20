@@ -1,73 +1,109 @@
-class Tree {
-  // nodes: an array of nodes, accessible by id
-  // nodeMap: an object of int:set(int) forming the tree
+// TO-DO: only use serializable data structures when writing to persistent storage
 
-  // for use when a tree is first made
-  constructor(id = 0, nodeMap = {}, nodes = []) {
+import { TreeNode } from "./TreeNode.js";
+
+export class Tree {
+  // nodes: an array of nodes, accessible by id
+  // nodeMap: an object of int-as-a-string:[int-as-a-string] forming the tree
+  // freedIds: ids released by node deletion
+  constructor(id, nodeMap, nodes) {
     this.id = id;
-    this.nodeMap = nodeMap;
-    this.nodes = nodes;
-    this.maxId = nodes.length; // Track the max node ID
+    this.freedIds = [];
+    if (Object.keys(nodeMap).length === 0) {
+      this.nodeMap = { 0: [] };
+    } else {
+      this.nodeMap = nodeMap;
+    }
+    if (nodes.length === 0) {
+      this.nodes = [
+        new TreeNode(0, -1, "Root", new Date().toISOString(), "Root", ""),
+      ];
+    } else {
+      this.nodes = nodes;
+    }
   }
 
-  getMaxId() {
-    this.maxId++;
-    return this.maxId;
+  getUniqueId() {
+    if (this.freedIds.length > 0) {
+      return this.freedIds.pop();
+    } else {
+      return this.nodes.length;
+    }
   }
 
   addNode(newNode) {
-    const nodeId = this.getMaxId(); // Assign a unique ID
-    newNode.id = nodeId;
-    this.nodes.push(newNode);
+    console.log(newNode);
+    this.nodes[newNode.id] = newNode;
+    this.nodeMap[newNode.id.toString()] = [];
+    this.nodeMap[newNode.parentId.toString()].push(newNode.id.toString());
+  }
 
-    if (!this.nodeMap[newNode.parentId]) {
-        this.nodeMap[newNode.parentId] = new Set();
-    }
-    this.nodeMap[newNode.parentId].add(nodeId);
-    this.nodeMap[nodeId] = new Set(); // Initialize child set
-
-    return nodeId; // Return the assigned ID
-}
+  // TO-DO: check if nodeId is in freedIds (invalid)
 
   deleteNode(nodeId) {
-    if (!this.nodes[nodeId]) {
+    if (nodeId <= 0 || nodeId >= this.nodes.length) {
       console.log("Invalid Id.");
       return;
     }
+    let temp = nodes[nodeId];
+    this.nodes[nodeId] = new TreeNode(
+      -1,
+      -1,
+      "",
+      new Date().toISOString(),
+      "",
+      ""
+    );
+    this.freedIds.append(nodeId);
 
-    let temp = this.nodes[nodeId];
-    this.nodes[nodeId] = null;
+    // remove node from its parent's nodeMap
+    const index = this.nodeMap[temp.parentId.toString()].indexOf(
+      nodeId.toString()
+    );
+    this.nodeMap[temp.parentId.toString()].splice(index, 1);
 
-    if (this.nodeMap[temp.parentId]) {
-      this.nodeMap[temp.parentId].delete(nodeId);
-    }
+    // add its children to the parent's nodeMap
+    this.nodeMap[nodeId.toString()].foreach((id) =>
+      nodeMap[temp.parentId.toString()].push(id.toString())
+    );
 
-    // Reattach children to the deleted node's parent
-    this.nodeMap[nodeId]?.forEach((childId) => {
-      this.nodeMap[temp.parentId]?.add(childId);
-    });
-
-    delete this.nodeMap[nodeId];
+    // delete its nodeMap entry
+    delete nodeMap[nodeId.toString()];
   }
 
+  // TO-DO: move node position within same parent
+
   moveNode(nodeId, newParentId) {
-    if (!this.nodes[nodeId] || !this.nodes[newParentId]) {
-      console.log("Invalid Id or Parent Id.");
+    if (nodeId <= 0 || nodeId >= this.nodes.length) {
+      console.log("Invalid Id.");
       return;
     }
+    if (newParentId < 0 || newParentId >= this.nodes.length) {
+      console.log("Invalid Parent Id.");
+      return;
+    }
+    let temp = nodes[nodeId];
 
-    let temp = this.nodes[nodeId];
-    this.nodeMap[temp.parentId]?.delete(nodeId);
-    this.nodeMap[newParentId].add(nodeId);
-    temp.parentId = newParentId;
+    // remove node from its former parent's nodeMap
+    const index = this.nodeMap[temp.parentId.toString()].indexOf(
+      nodeId.toString()
+    );
+    this.nodeMap[temp.parentId.toString()].splice(index, 1);
+
+    // add node to its new parent's nodeMap
+    nodeMap[newParentId.toString()].push(nodeId.toString());
   }
 
   getNode(nodeId) {
-    return this.nodes[nodeId] || null;
+    if (nodeId <= 0 || nodeId >= this.nodes.length) {
+      console.log("Invalid Id.");
+      return null;
+    }
+    return nodes[nodeId];
   }
 
   editNode(nodeId, newNode) {
-    if (!this.nodes[nodeId]) {
+    if (nodeId <= 0 || nodeId >= this.nodes.length) {
       console.log("Invalid Id.");
       return;
     }
