@@ -36,3 +36,17 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+.dark-mode body {
+    background-color: #3e3c3c;
+    color: white;
+}
+
+.dark-mode .bar {
+    background: #333;
+    color: white;
+}
+
+.dark-mode .arrow img {
+    filter: invert(1); 
+}
