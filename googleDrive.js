@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Function to authenticate user with Google
-async function authenticateUser() {
+export async function authenticateUser() {
     return new Promise((resolve, reject) => {
         chrome.identity.getAuthToken({ interactive: true }, (token) => {
             if (chrome.runtime.lastError || !token) {
@@ -19,7 +19,7 @@ async function authenticateUser() {
 
 // Get Google Drive File ID (or create if not exists)
 async function getDriveFileId(token) {
-    const url = "https://www.googleapis.com/drive/v3/files?q=name='saved_urls.json' and 'appDataFolder' in parents";
+    const url = `https://www.googleapis.com/drive/v3/files?q=name='saved_urls.json' and '${'1f4308cY_lsJoStjR3tFhVa2TyT-txshTFolder'}' in parents`;
     const response = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -33,79 +33,106 @@ async function getDriveFileId(token) {
     return data.files.length > 0 ? data.files[0].id : null;
 }
 
+// Delete all files in the folder
+async function clearDriveFolder(token, folderId) {
+    const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents`;
+    const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+        console.error("Drive API error while listing files:", await response.text());
+        return false;
+    }
+
+    const data = await response.json();
+    const deletePromises = data.files.map(file =>
+        fetch(`https://www.googleapis.com/drive/v3/files/${file.id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` }
+        })
+    );
+
+    await Promise.all(deletePromises);
+    console.log("All files in the folder have been deleted.");
+    return true;
+}
+
 // Create or update the file in Google Drive
-async function saveDataToDrive(token, urls) {
-    let fileId = await getDriveFileId(token);
+export async function saveDataToDrive(token, urls) {
+    const folderId = "1f4308cY_lsJoStjR3tFhVa2TyT-txshT";
+    console.log("Clearing folder before uploading new file...");
+    await clearDriveFolder(token, folderId);
+
+    console.log("Uploading new file...");
     const metadata = {
         name: "saved_urls.json",
         mimeType: "application/json",
-        parents: ["appDataFolder"]
+        parents: [folderId]
     };
 
     const fileContent = new Blob([JSON.stringify(urls)], { type: "application/json" });
-
     const formData = new FormData();
     formData.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
     formData.append("file", fileContent);
 
-    const url = fileId
-        ? `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`
-        : "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
+    const url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
 
-    const method = fileId ? "PATCH" : "POST";
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+        });
 
-    const response = await fetch(url, {
-        method,
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData
-    });
+        const responseData = await response.json();
+        console.log("Google Drive API Response:", responseData);
 
-    if (response.ok) {
-        console.log("File successfully saved to Google Drive.");
-
-        // Verify if the file was uploaded
-        const fileExists = await checkFileExists(token);
-        if (fileExists) {
-            console.log("Upload confirmed: File exists in Google Drive.");
+        if (response.ok) {
+            console.log("File successfully saved to Google Drive.");
+            return true;
         } else {
-            console.log("Upload failed: File not found.");
+            console.error("Failed to save file to Google Drive:", responseData);
+            return false;
         }
-
-        return true;
-    } else {
-        console.error("Failed to save file to Google Drive:", await response.text());
+    } catch (error) {
+        console.error("Error while saving to Google Drive:", error);
         return false;
     }
 }
 
-// Check if the file exists on Google Drive
-async function checkFileExists(token) {
-    // Query to check if 'saved_urls.json' exists in appDataFolder
-    const url = "https://www.googleapis.com/drive/v3/files?q=name='saved_urls.json' and 'appDataFolder' in parents";
+
+export async function checkFileExists(token) {
+    const url = "https://www.googleapis.com/drive/v3/files?q=name='saved_urls.json' and '1f4308cY_lsJoStjR3tFhVa2TyT-txshT' in parents";
 
     const response = await fetch(url, {
+        method: "GET",
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 
-    if (response.ok) {
-        const data = await response.json();
-        if (data.files && data.files.length > 0) {
-            console.log("File exists in Google Drive:", data.files[0]);
-            return true;  // File exists
-        } else {
-            console.log("File not found in Google Drive.");
-            return false; // File not found
-        }
+    // Handle any errors or unsuccessful responses
+    if (!response.ok) {
+        console.error("Error checking file existence:", await response.text());
+        return false; // Return false if there's an issue with the API call
+    }
+
+    const data = await response.json();
+
+    // Ensure the response has a valid `files` array
+    if (data.files && data.files.length > 0) {
+        console.log("File exists in Google Drive.");
+        return true;
     } else {
-        console.error("Failed to check file in Google Drive:", await response.text());
-        return false;  // Error during check
+        console.log("File does not exist in Google Drive.");
+        return false;
     }
 }
 
+
 // Load URLs from Google Drive
-async function loadDataFromDrive(token) {
+export async function loadDataFromDrive(token) {
     const fileId = await getDriveFileId(token);
     if (!fileId) return [];
 
@@ -154,3 +181,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     return true; // Required for async response
 });
+
