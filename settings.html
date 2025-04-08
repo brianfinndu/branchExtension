@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="common.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Keeps arrows at edges */
+            background: #b3aba5;
+            border-radius: 20px;
+            padding: 10px;
+            margin: 10px 0;
+            color: #343933 ;
+            font-weight: bold;
+        }
+        .bar .text {
+            flex-grow: 1; /* Centers the text without affecting arrows */
+            text-align: center;
+        }
+        .bar-no-arrows {
+            display: flex;
+            justify-content: center; /* Centers text directly */
+            align-items: center;
+            background: #b3aba5;
+            border-radius: 20px;
+            padding: 10px;
+            margin: 10px 0;
+            color: #343933;
+            font-weight: bold;
+        }                
+        .arrow img{
+            cursor: pointer;
+            width: 30px; 
+            height: 17px; 
+            display: inline-block;
+        }
+        .color-picker-item {
+            display: grid;
+            grid-template-columns: auto auto; 
+            align-items: center;
+            column-gap: 5px;
+            margin: 5px 0;
+        }
+        .color-description {
+            margin-left: 50px;
+            min-width: 160px;
+            text-align: left;
+            font-size: 15px;
+        }
+        .color-option {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            justify-self: end;
+            margin-right: 50px;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+        }
+        .color-picker {
+            display: none;
+        }
+        .return-button {
+            background-color: #31312f;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-weight: bold
+        }
+        .return-button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span>BRANCH</span>
+            <div class="logo">
+                <img src="images/branchLogo.png" alt="Extension Logo" width="30">
+            </div>
+        </div>
+                <!-- Bars with arrows -->
+        <div class="bar">
+            <span class="arrow" onclick="changeText(0, -1)">
+                <img src="images/left-arrow.png" alt="Left Arrow">
+            </span>
+            <span class="text" id="text0">follow branch on link click</span>
+            <span class="arrow" onclick="changeText(0, 1)">
+                <img src="images/right-arrow.png" alt="Right Arrow">
+            </span>
+        </div>
+
+        <div class="bar">
+            <span class="arrow" onclick="changeText(1, -1)">
+                <img src="images/left-arrow.png" alt="Left Arrow">
+            </span>
+            <span class="text" id="text1">new tree on new tab</span>
+            <span class="arrow" onclick="changeText(1, 1)">
+                <img src="images/right-arrow.png" alt="Right Arrow">
+            </span>
+        </div>
+        <script src="settings.js"></script>
+        <div class="bar">
+            <span class="arrow" onclick="changeText(2, -1)">
+                <img src="images/left-arrow.png" alt="Left Arrow">
+            </span>
+            <span class="text" id="text2">light mode</span>
+            <span class="arrow" onclick="changeText(2, 1)">
+                <img src="images/right-arrow.png" alt="Right Arrow">
+            </span>
+        </div>
+
+        <!-- Bars without arrows -->
+        <div class="bar-no-arrows">overlay shortcut: ctrl + cmd + a</div>
+        <div class="bar-no-arrows">switch branch method: ctrl + cmd</div>
+
+        <div class="color-picker-item">
+            <span class="color-description">primary accent color:</span>
+            <span class="color-option" style="background: #2e7d32;" onclick="openColorPicker(0)"></span>
+            <input type="color" class="color-picker" id="colorPicker0" onchange="changeColor(0)">
+        </div>
+        <div class="color-picker-item">
+            <span class="color-description">secondary accent color:</span>
+            <span class="color-option" style="background: #bdbdbd;" onclick="openColorPicker(1)"></span>
+            <input type="color" class="color-picker" id="colorPicker1" onchange="changeColor(1)">
+        </div>
+        <div class="color-picker-item">
+            <span class="color-description">tertiary accent color:</span>
+            <span class="color-option" style="background: #9e9e9e;" onclick="openColorPicker(2)"></span>
+            <input type="color" class="color-picker" id="colorPicker2" onchange="changeColor(2)">
+        </div>
+        <div class="color-picker-item">
+            <span class="color-description">dark text color:</span>
+            <span class="color-option" style="background: #000;" onclick="openColorPicker(3)"></span>
+            <input type="color" class="color-picker" id="colorPicker3" onchange="changeColor(3)">
+        </div>
+        <div class="color-picker-item">
+            <span class="color-description">light text color:</span>
+            <span class="color-option" style="background: #fff;" onclick="openColorPicker(4)"></span>
+            <input type="color" class="color-picker" id="colorPicker4" onchange="changeColor(4)">
+        </div>
+        <a href="branch.html" title="Dashboard">
+            <button class="return-button">return to dashboard</button>
+        </a>
+    </div>
+
+    <script>
+        const textOptions = [
+            ["follow branch on link click", "new tree on same tab"],
+            ["new tree on new tab", "reuse existing tab"],
+            ["light mode", "dark mode"]
+        ];
+
+        function changeText(index, direction) {
+            const textElement = document.getElementById(`text${index}`);
+            const options = textOptions[index];
+            let currentIndex = options.indexOf(textElement.textContent);
+            currentIndex = (currentIndex + direction + options.length) % options.length;
+            textElement.textContent = options[currentIndex];
+        }
+
+        function openColorPicker(index) {
+            document.getElementById(`colorPicker${index}`).click();
+        }
+
+        function changeColor(index) {
+            const picker = document.getElementById(`colorPicker${index}`);
+            document.querySelectorAll('.color-option')[index].style.backgroundColor = picker.value;
+        }
+    </script>
+</body>
+</html>

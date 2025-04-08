@@ -1,0 +1,52 @@
+@font-face {
+    font-family: 'BobbyJones';
+    src: url('fonts/Bobby Jones.otf') format('opentype'); 
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    font-family: 'Fira Sans', sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    text-align: center;
+    padding: 20px;
+}
+.container {
+    max-width: 600px;
+    min-width: 250px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+}
+.header {
+    font-family: 'BobbyJones', sans-serif; 
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    font-size: 40px;
+    font-weight: bold;
+    color: #2a543c;
+}
+.logo {
+    width: 45px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dark-mode body {
+    background-color: #3e3c3c;
+    color: white;
+}
+
+.dark-mode .bar {
+    background: #333;
+    color: white;
+}
+
+.dark-mode .arrow img {
+    filter: invert(1); 
+}
