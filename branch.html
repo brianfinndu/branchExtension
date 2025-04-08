@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>branch</title>
-    <link rel="stylesheet" href="bulma.min.css" />
     <style>
       .title-container {
         display: flex;
@@ -79,32 +78,11 @@
       </div>
 
       <input type="button" value="Open Tree Render" id="render-page-btn" />
+      <a href="upload.html" title="Open Upload Page">
+        <button>Open Upload Page</button>
+      </a>
+      <input type="button" value="Download Tree" id="download-btn" />
     </section>
-    <!-- File Upload Button -->
-    <input type="file" id="uploadTreeFile" class="btn" accept=".json" />
-
-    <!-- Download Button -->
-    <style>
-      .btn {
-        background-color: DodgerBlue;
-        border: none;
-        color: white;
-        padding: 12px 30px;
-        cursor: pointer;
-        font-size: 20px;
-      }
-
-      /* Darker background on mouse-over */
-      .btn:hover {
-        background-color: RoyalBlue;
-      }
-    </style>
-
-    <button id="downloadTreeButton" class="btn" style="width: 100%">
-      <i class="fa fa-download"></i> Download Tree as JSON
-    </button>
-    <script src="Tree.js"></script>
-    <script src="TreeNode.js"></script>
     <script src="branchTest.js"></script>
   </body>
 </html>
