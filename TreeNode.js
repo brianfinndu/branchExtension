@@ -1,13 +1,13 @@
 export class TreeNode {
   constructor(
-    id,
-    parentId,
-    url,
-    timestamp,
-    title,
-    favicon,
-    contentType = "link",
-    visited = true
+      id,
+      parentId,
+      url,
+      timestamp,
+      title,
+      favicon,
+      contentType = "link",
+      visited = true
   ) {
     this.id = id;
     this.parentId = parentId;

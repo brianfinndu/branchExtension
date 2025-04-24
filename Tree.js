@@ -62,27 +62,27 @@ export class Tree {
 
   deleteNode(nodeId) {
     if (
-      nodeId <= 0 ||
-      nodeId >= this.nodes.length ||
-      this.freedIds.includes(nodeId)
+        nodeId <= 0 ||
+        nodeId >= this.nodes.length ||
+        this.freedIds.includes(nodeId)
     ) {
       console.log("Invalid Id.");
       return;
     }
     let temp = this.nodes[nodeId];
     this.nodes[nodeId] = new TreeNode(
-      -1,
-      -1,
-      "",
-      new Date().toISOString(),
-      "",
-      ""
+        -1,
+        -1,
+        "",
+        new Date().toISOString(),
+        "",
+        ""
     );
     this.freedIds.push(nodeId);
 
     // remove node from its parent's nodeMap
     const index = this.nodeMap[temp.parentId.toString()].indexOf(
-      nodeId.toString()
+        nodeId.toString()
     );
     this.nodeMap[temp.parentId.toString()].splice(index, 1);
 
@@ -98,16 +98,16 @@ export class Tree {
   // delete your children, then delete yourself
   deleteTree(nodeId) {
     if (
-      nodeId <= 0 ||
-      nodeId >= this.nodes.length ||
-      this.freedIds.includes(nodeId)
+        nodeId <= 0 ||
+        nodeId >= this.nodes.length ||
+        this.freedIds.includes(nodeId)
     ) {
       console.log("Invalid Id.");
       return;
     }
     let temp = this.nodes[nodeId];
     const index = this.nodeMap[temp.parentId.toString()].indexOf(
-      nodeId.toString()
+        nodeId.toString()
     );
     this.nodeMap[temp.parentId.toString()].splice(index, 1);
 
@@ -120,12 +120,12 @@ export class Tree {
     }
 
     this.nodes[nodeId] = new TreeNode(
-      -1,
-      -1,
-      "",
-      new Date().toISOString(),
-      "",
-      ""
+        -1,
+        -1,
+        "",
+        new Date().toISOString(),
+        "",
+        ""
     );
 
     this.freedIds.push(nodeId);
@@ -143,8 +143,8 @@ export class Tree {
       return;
     }
     if (
-      parseInt(newParentId) < 0 ||
-      parseInt(newParentId) >= this.nodes.length
+        parseInt(newParentId) < 0 ||
+        parseInt(newParentId) >= this.nodes.length
     ) {
       console.log("Invalid Parent Id.");
       return;
@@ -161,7 +161,7 @@ export class Tree {
     let temp = this.nodes[rootId];
     // remove node from its former parent's nodeMap
     const index = this.nodeMap[temp.parentId.toString()].indexOf(
-      rootId.toString()
+        rootId.toString()
     );
 
     this.nodeMap[temp.parentId.toString()].splice(index, 1);

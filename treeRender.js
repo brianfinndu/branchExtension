@@ -49,8 +49,8 @@ function traverse(rootIndex, nodeMap, nodes) {
     event.stopPropagation();
     let dragText = document.createElement("div");
     dragText.textContent = [...event.target.childNodes]
-      .filter((node) => node.nodeType === Node.TEXT_NODE)
-      .map((node) => node.textContent);
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent);
     dragText.style.position = "absolute";
     dragText.style.top = "-9999px";
     document.body.appendChild(dragText);
@@ -139,7 +139,7 @@ document.addEventListener("mousemove", (event) => {
 document.addEventListener("mouseout", (event) => {
   if (event.target.closest("li") === hoveringLi) {
     let hoverPopup = document.getElementById("hover-popup");
-    hoverPopup.innerHTML = "";
+    hoverPopup.innerHTML = " ";
     hoverPopup.style.display = "none";
     hoveringLi = null;
   }
@@ -199,7 +199,7 @@ async function renderTree() {
     console.log(response);
     document.body.innerHTML = "";
     document.body.appendChild(
-      traverse("0", response.activeTree.nodeMap, response.activeTree.nodes)
+        traverse("0", response.activeTree.nodeMap, response.activeTree.nodes)
     );
     const hoverPopup = document.createElement("div");
     hoverPopup.id = "hover-popup";

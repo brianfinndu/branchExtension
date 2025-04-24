@@ -3,10 +3,19 @@
 import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
 
-let activeTree = new Tree(0, {}, []);
+let trees = {};              // <-- Added for multiple trees support
+let currentTreeId = null;
 let rightClickedNodeId = -1;
 let rightClickedUrl = "";
 
+
+function generateUniqueTreeId() {
+  return Date.now().toString();
+}
+
+function getActiveTree() {
+  return trees[currentTreeId];
+}
 // Allow content scripts to access tab info
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.session.setAccessLevel({
@@ -19,7 +28,9 @@ chrome.runtime.onInstalled.addListener(() => {
 // TO-DO: change this to load tree from persistent storage
 chrome.runtime.onStartup.addListener(function () {
   console.log("Startup script launching.");
-  activeTree = new Tree(0, {}, []);
+  const treeId = generateUniqueTreeId();
+  trees[treeId] = new Tree(treeId, {}, []);
+  currentTreeId = treeId;
 });
 
 // Keep script alive
@@ -48,16 +59,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       visited = nodeData.visited;
     }
     let newNode = new TreeNode(
-      nodeData.id,
-      nodeData.parentId,
-      nodeData.url,
-      nodeData.timestamp,
-      nodeData.title,
-      nodeData.favicon,
-      contentType,
-      visited
+        nodeData.id,
+        nodeData.parentId,
+        nodeData.url,
+        nodeData.timestamp,
+        nodeData.title,
+        nodeData.favicon,
+        contentType,
+        visited
     );
-    activeTree.addNode(newNode);
+    getActiveTree().addNode(newNode);
     if (contentType === "note") {
       chrome.runtime.sendMessage({ action: "renderNeeded" });
     }
@@ -67,7 +78,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // Handle message from content scripts requesting unique Id
   if (message.action === "getId") {
     console.log("ID request received.");
-    let uniqueId = activeTree.getUniqueId();
+    let uniqueId = getActiveTree().getUniqueId();
     console.log("Sending ID " + uniqueId);
     sendResponse({ uniqueId: uniqueId });
     return true;
@@ -75,7 +86,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   // Handle messages from Branch requesting The Tree
   if (message.action === "getTree") {
-    sendResponse({ activeTree: activeTree });
+    sendResponse({ activeTree: getActiveTree() });
     return true;
   }
 
@@ -91,7 +102,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   // Handle messages from Branch requesting tree movement
   if (message.action === "moveTree") {
-    activeTree.moveTree(message.rootId, message.newParentId);
+    getActiveTree().moveTree(message.rootId, message.newParentId);
   }
 
   // Handle message from Branch requesting single node movement
@@ -119,33 +130,56 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "importTree") {
     let tree = message.treePOJO;
     let rehydratedNodes = tree.nodes.map(
-      (obj) =>
-        new TreeNode(
-          obj.id,
-          obj.parentId,
-          obj.url,
-          obj.timestamp,
-          obj.title,
-          obj.favicon,
-          obj.visited,
-          obj.contentType
-        )
+        (obj) =>
+            new TreeNode(
+                obj.id,
+                obj.parentId,
+                obj.url,
+                obj.timestamp,
+                obj.title,
+                obj.favicon,
+                obj.visited,
+                obj.contentType
+            )
     );
-    activeTree.id = tree.id;
-    activeTree.nodeMap = tree.nodeMap;
-    activeTree.nodes = rehydratedNodes;
+    trees[tree.id] = new Tree(tree.id, tree.nodeMap, rehydratedNodes);
+    currentTreeId = tree.id;
     console.log("Import successful!");
   }
 });
 
+if (message.action === "createNewTree") {
+  const newId = generateUniqueTreeId();
+  trees[newId] = new Tree(newId, {}, []);
+  currentTreeId = newId;
+  sendResponse({ newTreeId: newId });
+}
+
+if (message.action === "setActiveTree") {
+  if (trees[message.treeId]) {
+    currentTreeId = message.treeId;
+    sendResponse({ success: true });
+  } else {
+    sendResponse({ success: false, error: "Tree not found" });
+  }
+}
+
+if (message.action === "getTreeList") {
+  const treeList = Object.entries(trees).map(([id, tree]) => ({
+    id,
+    rootTitle: tree.getNode(0)?.title || "Untitled"
+  }));
+  sendResponse({ trees: treeList });
+}
+
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   console.log("Context menu item clicked");
   if (info.menuItemId === "deleteNode") {
-    activeTree.deleteNode(rightClickedNodeId);
+    getActiveTree().deleteNode(rightClickedNodeId);
     chrome.runtime.sendMessage({ action: "renderNeeded" });
   }
   if (info.menuItemId === "deleteTree") {
-    activeTree.deleteTree(rightClickedNodeId);
+    getActiveTree().deleteTree(rightClickedNodeId);
     chrome.runtime.sendMessage({ action: "renderNeeded" });
   }
   if (info.menuItemId === "addNoteNode") {
@@ -155,18 +189,18 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     });
   }
   if (info.menuItemId === "addUnvisited") {
-    const uniqueId = activeTree.getUniqueId();
+    const uniqueId = getActiveTree().getUniqueId();
     let newNode = new TreeNode(
-      uniqueId,
-      rightClickedNodeId,
-      rightClickedUrl,
-      "",
-      "(unvisited) " + rightClickedUrl, // title...
-      "", // favicon...
-      "link",
-      false
+        uniqueId,
+        rightClickedNodeId,
+        rightClickedUrl,
+        "",
+        "(unvisited) " + rightClickedUrl, // title...
+        "", // favicon...
+        "link",
+        false
     );
-    activeTree.addNode(newNode);
+    getActiveTree().addNode(newNode);
   }
 });
 
