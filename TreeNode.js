@@ -7,7 +7,8 @@ export class TreeNode {
     title,
     favicon,
     contentType = "link",
-    visited = true
+    visited = true,
+    expanded = true
   ) {
     this.id = id;
     this.parentId = parentId;
@@ -17,5 +18,6 @@ export class TreeNode {
     this.favicon = favicon;
     this.contentType = contentType;
     this.visited = visited;
+    this.expanded = expanded;
   }
 }
