@@ -8,8 +8,23 @@
     "storage",
     "webNavigation",
     "scripting",
-    "contextMenus"
+    "contextMenus",
+    "tabs",
+    "storage",
+    "webNavigation",
+    "scripting",
+    "contextMenus",
+    "identity"
   ],
+  "host_permissions": [
+    "https://www.googleapis.com/*"
+  ],
+  "oauth2": {
+    "client_id":"532808127148-i1vm5tplqemsog8guuf0fkmgfdjck3co.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/drive/file"
+    ]
+  },
   "action": {
     "default_popup": "branch.html",
     "default_icon": "./images/branchLogo.png"

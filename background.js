@@ -2,6 +2,7 @@
 
 import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
+import {authenticateUser, saveTreesToDrive, loadTreesFromDrive} from "./googleDrive";
 
 let trees = {};              // <-- Added for multiple trees support
 let currentTreeId = null;
@@ -146,6 +147,38 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     currentTreeId = tree.id;
     console.log("Import successful!");
   }
+  // ――― Drive Sync Handlers ―――
+  if (message.action === "saveTrees") {
+    authenticateUser()
+        .then(token => saveTreesToDrive(token, trees))
+        .then(success => sendResponse({ success }))
+        .catch(err => sendResponse({ success: false, error: err }));
+    return true;    // keep channel open for async sendResponse
+  }
+
+  if (message.action === "loadTrees") {
+    authenticateUser()
+        .then(token => loadTreesFromDrive(token))
+        .then(treeMap => {
+          // reload into memory
+          Object.entries(treeMap).forEach(([id, tree]) => {
+            const rehydrated = tree.nodes.map(obj =>
+                new TreeNode(
+                    obj.id, obj.parentId, obj.url,
+                    obj.timestamp, obj.title,
+                    obj.favicon, obj.contentType, obj.visited
+                )
+            );
+            trees[id] = new Tree(tree.id, tree.nodeMap, rehydrated);
+          });
+          // pick one as active if none set
+          if (!currentTreeId) currentTreeId = Object.keys(treeMap)[0];
+          sendResponse({ success: true, treeMap });
+        })
+        .catch(err => sendResponse({ success: false, error: err }));
+    return true;
+  }
+
 });
 
 if (message.action === "createNewTree") {
