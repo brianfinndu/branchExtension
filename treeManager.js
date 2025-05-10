@@ -7,8 +7,23 @@ function renderTreeList(trees) {
         div.className = "tree-entry";
 
         const title = document.createElement("strong");
-        title.textContent = `${tree.rootTitle} (ID: ${tree.id})`;
+        title.textContent = `${tree.name} (ID: ${tree.id})`;
 
+        const renameBtn = document.createElement("button");
+        renameBtn.textContent = "Rename";renameBtn.addEventListener("click", () => {
+            const newName = prompt("New name for this tree:", tree.name);
+            if (!newName) return;
+            chrome.runtime.sendMessage(
+                { action: "renameTree", treeId: tree.id, newName },
+                resp => {
+                    if (resp.success) fetchTreeList();
+                    else alert("Rename failed: " + resp.error);
+                }
+            );
+        });
+
+
+        setActiveBtn.addEventListener("click", () => setActive(tree.id));
         const setActiveBtn = document.createElement("button");
         setActiveBtn.textContent = "Set Active";
         setActiveBtn.addEventListener("click", () => setActive(tree.id));
@@ -49,10 +64,19 @@ function exportTree(treeId) {
 }
 
 document.getElementById("create-tree-btn").addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "createNewTree" }, (response) => {
+    const name = prompt("Enter name for new tree", "New Tree");
+    chrome.runtime.sendMessage({ action: "createNewTree", treeName: name }, (response) => {
         if (response.newTreeId) {
             alert("New tree created and set active: " + response.newTreeId);
             fetchTreeList();
+        }
+        function setActive(treeId) {
+            chrome.runtime.sendMessage({ action: "setActiveTree", treeId },
+                resp => {
+                    if (resp.success) fetchTreeList();
+                    else alert("Error: " + resp.error);
+                }
+            );
         }
     });
 });
