@@ -6,11 +6,14 @@ function renderTreeList(trees) {
         const div = document.createElement("div");
         div.className = "tree-entry";
 
+        // show the saved name
         const title = document.createElement("strong");
         title.textContent = `${tree.name} (ID: ${tree.id})`;
 
+        // Rename button
         const renameBtn = document.createElement("button");
-        renameBtn.textContent = "Rename";renameBtn.addEventListener("click", () => {
+        renameBtn.textContent = "Rename";
+        renameBtn.addEventListener("click", () => {
             const newName = prompt("New name for this tree:", tree.name);
             if (!newName) return;
             chrome.runtime.sendMessage(
@@ -23,7 +26,7 @@ function renderTreeList(trees) {
         });
 
 
-        setActiveBtn.addEventListener("click", () => setActive(tree.id));
+
         const setActiveBtn = document.createElement("button");
         setActiveBtn.textContent = "Set Active";
         setActiveBtn.addEventListener("click", () => setActive(tree.id));
@@ -33,6 +36,7 @@ function renderTreeList(trees) {
         exportBtn.addEventListener("click", () => exportTree(tree.id));
 
         div.appendChild(title);
+        div.appendChild(renameBtn);
         div.appendChild(setActiveBtn);
         div.appendChild(exportBtn);
 
@@ -41,8 +45,13 @@ function renderTreeList(trees) {
 }
 
 function setActive(treeId) {
-    chrome.runtime.sendMessage({ action: "setActiveTree", treeId }, (response) => {
-        alert(response.success ? "Tree set as active." : `Failed: ${response.error}`);
+    chrome.runtime.sendMessage({ action: "setActiveTree", treeId }, response => {
+        if (response.success) {
+            alert("Tree set as active.");
+            fetchTreeList();        // re-render so user sees which is active
+        } else {
+            alert("Failed to set active: " + response.error);
+        }
     });
 }
 

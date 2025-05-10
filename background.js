@@ -1,27 +1,35 @@
 // TO-DO: back button...
-
 import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
 
 let activeTree = new Tree(0, {}, []);
 let rightClickedNodeId = -1;
 let rightClickedUrl = "";
-let trees = [];
+let trees = {};
 let nextTreeId = 1;
 let activeTreeId = null;
 
-function createInitialTree() {
+// helper to actually register a new Tree object
+function registerTree(name = `Tree ${nextTreeId}`) {
   const id = nextTreeId++;
   const tree = new Tree(id, {}, []);
-  trees[id] = tree;
+  trees[id] = { tree, name };
   activeTreeId = id;
+  return id;
+}
+
+// on install/startup make one default Tree
+chrome.runtime.onInstalled.addListener(() => registerTree());
+chrome.runtime.onStartup.addListener(() => registerTree());
+
+function getTreeById(id) {
+  return trees[id].tree;
 }
 
 function getActiveTree(){
-  return trees[activeTreeId]
+  return trees[activeTreeId].tree;
 }
-chrome.runtime.onStartup.addListener(createInitialTree);
-chrome.runtime.onInstalled.addListener(createInitialTree);
+
 // Allow content scripts to access tab info
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.session.setAccessLevel({
@@ -50,8 +58,8 @@ chrome.runtime.onSuspend.addListener(() => {
   // save tree to persistent storage
 });
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  // Handle messages from content scripts requesting node add
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // 1) Add a node (no response expected)
   if (message.action === "addNode") {
     const newNode = new TreeNode(
         message.nodeData.id,
@@ -64,12 +72,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         message.nodeData.visited
     );
     getActiveTree().addNode(newNode);
-    // if UI needs re-render:
     chrome.runtime.sendMessage({ action: "renderNeeded" });
     return;
   }
 
-  // Handle message from content scripts requesting unique Id
+  // 2) Get a unique ID (sync response)
   if (message.action === "getId") {
     console.log("ID request received.");
     const uid = getActiveTree().getUniqueId();
@@ -77,69 +84,99 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     return;
   }
 
-  // Handle messages from Branch requesting The Tree
+  // 3) Return the current tree (sync response)
   if (message.action === "getTree") {
     sendResponse({ activeTree: getActiveTree() });
     return;
   }
 
+  // 4) Create a new tree (sync response)
   if (message.action === "createNewTree") {
-    const id = nextTreeId++;
-    const tree = new Tree(id, {}, []);
-    trees[id] = tree;
-    activeTreeId = id;
+    const name = message.treeName || `Tree ${nextTreeId}`;
+    const id = registerTree(name);
     sendResponse({ newTreeId: id });
-    return;  // done
+    return;
   }
 
+  // 5) List all trees (sync response)
   if (message.action === "getTreeList") {
-    const list = Object.values(trees).map(t => ({
-      id: t.id,
-      rootTitle: t.nodes[0].title
+    const list = Object.entries(trees).map(([id, { name }]) => ({
+      id: Number(id),
+      name
     }));
     sendResponse({ trees: list });
     return;
   }
 
-  if(message.action === "setActiveTree") {
-    const { treeId } = message;
-    if (!trees[treeId]) {
-      sendResponse({ success: false, error: "No such tree ID" });
-    } else {
-      activeTreeId = treeId;
-      sendResponse({ success: true });
-    }
+  // 6) Receive a snapshot from a tab (sync response)
+  if (message.action === "snapshotTree") {
+    getActiveTree().nodes = message.nodes;
+    sendResponse({ success: true });
     return;
-
   }
-  /*
 
-  // Handle messages from Branch requesting node deletion
-  if (message.action === "deleteNode") {
-    console.log("Node deletion requested");
-    activeTree.deleteNode(message.nodeId, message.parentId);
-    notifyTabsNodeDelete(message.nodeId, message.parentId);
+  // 7) Switch the active tree (async)
+  if (message.action === "setActiveTree") {
+    (async () => {
+      // a) Find all open editor tabs
+      const allTabs = await chrome.tabs.query({});
+      const editors = allTabs.filter(t =>
+          t.url?.endsWith("/treeRender.html")
+      );
+
+      // b) Ask each to snapshot its state
+      await Promise.all(editors.map(tab =>
+          new Promise(res =>
+              chrome.tabs.sendMessage(tab.id, { action: "snapshotTree" }, res)
+          )
+      ));
+
+      // c) Flip the active ID
+      const newId = message.treeId;
+      activeTreeId = newId;
+
+      // d) Tell each tab to load the new tree
+      editors.forEach(tab =>
+          chrome.tabs.sendMessage(tab.id, {
+            action: "loadTree",
+            treeId: activeTreeId
+          })
+      );
+
+      // e) Finally respond to the original sender
+      sendResponse({ success: true });
+    })();
+
+    // Keep the message channel open for the async sendResponse
+    return true;
   }
-  */
 
-  // Handle messages from Branch requesting tree movement
+  // 8) Other actions (no response expected)
   if (message.action === "moveTree") {
     activeTree.moveTree(message.rootId, message.newParentId);
+    return;
   }
 
-  // Handle message from Branch requesting single node movement
   if (message.action === "moveNode") {
+    // implement node movement if needed
+    return;
   }
 
   if (message.action === "setRightClickedNodeId") {
     rightClickedNodeId = message.nodeId;
+    return;
   }
+
   if (message.action === "setRightClickedUrl") {
     rightClickedUrl = message.url;
+    return;
   }
+
   if (message.action === "hideContextMenu") {
     chrome.contextMenus.removeAll();
+    return;
   }
+
   if (message.action === "setContentScriptContextMenu") {
     chrome.contextMenus.removeAll(() => {
       chrome.contextMenus.create({
@@ -148,26 +185,28 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         contexts: ["all"],
       });
     });
+    return;
   }
+
   if (message.action === "importTree") {
-    let tree = message.treePOJO;
-    let rehydratedNodes = tree.nodes.map(
-        (obj) =>
-            new TreeNode(
-                obj.id,
-                obj.parentId,
-                obj.url,
-                obj.timestamp,
-                obj.title,
-                obj.favicon,
-                obj.visited,
-                obj.contentType
-            )
+    const tree = message.treePOJO;
+    const rehydratedNodes = tree.nodes.map(obj =>
+        new TreeNode(
+            obj.id,
+            obj.parentId,
+            obj.url,
+            obj.timestamp,
+            obj.title,
+            obj.favicon,
+            obj.visited,
+            obj.contentType
+        )
     );
     activeTree.id = tree.id;
     activeTree.nodeMap = tree.nodeMap;
     activeTree.nodes = rehydratedNodes;
     console.log("Import successful!");
+    return;
   }
 });
 

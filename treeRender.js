@@ -5,6 +5,15 @@
 
 let hoveringLi = null;
 
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.action === "snapshotTree") {
+    sendResponse({ nodes: myTree.getAllNodes() });
+  }
+  if (msg.action === "loadTree") {
+    loadTree(msg.treeId);
+  }
+});
+
 document.addEventListener("DOMContentLoaded", async function () {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
@@ -158,6 +167,7 @@ document.addEventListener("contextmenu", (event) => {
     nodeId: nodeId,
   });
 });
+
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {

@@ -50,14 +50,16 @@ export class Tree {
   }
 
   addNode(newNode) {
+    const p = newNode.parentId.toString();
+
     if (newNode.id < 0 || newNode.parentId < 0) {
       console.log("Invalid node ID or parent ID");
       return;
     }
-
+    if (!this.nodeMap[p]) this.nodeMap[p] = [];
     this.nodes[newNode.id] = newNode;
     this.nodeMap[newNode.id.toString()] = [];
-    this.nodeMap[newNode.parentId.toString()].push(newNode.id.toString());
+    this.nodeMap[p].push(newNode.id.toString());
   }
 
   deleteNode(nodeId) {

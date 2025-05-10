@@ -9,11 +9,6 @@
     "webNavigation",
     "scripting",
     "contextMenus",
-    "tabs",
-    "storage",
-    "webNavigation",
-    "scripting",
-    "contextMenus",
     "identity"
   ],
   "host_permissions": [
