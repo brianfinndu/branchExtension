@@ -3,6 +3,8 @@ import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
 import { saveTreeToDrive } from "./googleDrive.js";
 
+import { fetchLatestTreeFromDrive } from "./googleDrive.js";
+
 
 let activeTree = new Tree(0, {}, []);
 let rightClickedNodeId = -1;
@@ -11,18 +13,53 @@ let trees = {};
 let nextTreeId = 1;
 let activeTreeId = null;
 
-// helper to actually register a new Tree object
+
 function registerTree(name = `Tree ${nextTreeId}`) {
   const id = nextTreeId++;
-  const tree = new Tree(id, {}, []);
-  trees[id] = { tree, name };
+  trees[id] = { tree: new Tree(id, {}, []), name };
   activeTreeId = id;
   return id;
 }
 
-// on install/startup make one default Tree
-chrome.runtime.onInstalled.addListener(() => registerTree());
-chrome.runtime.onStartup.addListener(() => registerTree());
+
+async function loadLastActiveTree() {
+  try {
+    const treePOJO = await fetchLatestTreeFromDrive();
+    if (treePOJO) {
+      // rehydrate nodes
+      const rehydrated = treePOJO.nodes.map(obj =>
+          new TreeNode(
+              obj.id, obj.parentId, obj.url, obj.timestamp,
+              obj.title, obj.favicon, obj.contentType, obj.visited
+          )
+      );
+      const restored = new Tree(treePOJO.id, treePOJO.nodeMap, rehydrated);
+      trees[treePOJO.id] = {
+        tree: restored,
+        name: treePOJO.name || `Tree ${treePOJO.id}`
+      };
+      activeTreeId = treePOJO.id;
+      console.log(`Loaded tree ${treePOJO.id} from Drive`);
+    } else {
+      const id = registerTree();
+      console.log(`No Drive tree found; created default tree ${id}`);
+    }
+
+    // notify any open treeRender.html tabs to re-render
+    const renderUrl = chrome.runtime.getURL("treeRender.html");
+    const tabs = await chrome.tabs.query({ url: renderUrl });
+    for (const tab of tabs) {
+      chrome.tabs.sendMessage(tab.id, { action: "renderNeeded" }, () => {
+        // ignore missing-listener errors
+      });
+    }
+  } catch (err) {
+    console.error("Tree initialization failed:", err);
+  }
+}
+
+chrome.runtime.onInstalled.addListener(loadLastActiveTree);
+chrome.runtime.onStartup.addListener(loadLastActiveTree);
 
 function getTreeById(id) {
   return trees[id].tree;

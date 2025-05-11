@@ -18,7 +18,7 @@ export async function authenticateUser() {
     });
 }
 
-// Folder where all tree files live:
+// Folder where all tree files live: THIS WILL NEED TO BE CHNAGED BACK TO APP DATA FOLDER
 const folderId = '1f4308cY_lsJoStjR3tFhVa2TyT-txshT';
 
 /**
@@ -97,4 +97,36 @@ export async function saveTreeToDrive(treeName, treeId, treeData) {
         });
         console.log(`Drive: created tree ${treeId} → ${fileName}`);
     }
+
+}
+
+
+/**
+ * Fetch the single most-recently modified tree file from Drive and parse its JSON.
+ * @returns {Promise< { id:number, nodeMap:object, nodes:object[], name:string } | null>}
+ */
+export async function fetchLatestTreeFromDrive() {
+    const token = await authenticateUser();
+    // list files in folder, sorted by modifiedTime desc, pageSize=1
+    const q = `'${folderId}' in parents and trashed=false`;
+    const listUrl =
+        `https://www.googleapis.com/drive/v3/files`
+        + `?q=${encodeURIComponent(q)}`
+        + `&orderBy=modifiedTime desc`
+        + `&pageSize=1`
+        + `&fields=files(id,name)`;
+    const listResp = await fetch(listUrl, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    const listJson = await listResp.json();
+    const file = listJson.files?.[0];
+    if (!file) return null;
+
+    // download its contents
+    const downloadUrl =
+        `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`;
+    const downloadResp = await fetch(downloadUrl, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return downloadResp.json();
 }
