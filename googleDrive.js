@@ -1,71 +1,100 @@
 // googleDrive.js - Adds Google Drive synchronization for saving and loading tree data
 // This file handles authentication, file lookup, and folder operations using the Google Drive API in a Chrome extension.
-
-
-import { Tree } from "./Tree.js";
-import { TreeNode } from "./TreeNode.js";
-
-chrome.runtime.onInstalled.addListener(() => {
-    console.log("Branch Extension with Drive Sync installed.");
-});
+// googleDrive.js — Google Drive sync for multiple trees
 
 /**
- * Authenticate the user with Google using Chrome Identity API.
- * Returns a Promise that resolves with the OAuth token.
+ * Authenticate the user with Google via Chrome Identity.
+ * @returns {Promise<string>} OAuth token
  */
 export async function authenticateUser() {
     return new Promise((resolve, reject) => {
-        chrome.identity.getAuthToken({ interactive: true }, (token) => {
+        chrome.identity.getAuthToken({ interactive: true }, token => {
             if (chrome.runtime.lastError || !token) {
-                // checkers to make sure token exists
-                console.error("Auth Error:", chrome.runtime.lastError?.message || "Unknown error");
-                reject(chrome.runtime.lastError?.message || "Unknown error");
+                reject(chrome.runtime.lastError?.message || 'Failed to get auth token');
             } else {
-                console.log("Authenticated with token:", token);
                 resolve(token);
             }
         });
     });
 }
 
-// Google Drive API Interaction
-// the id of the folder used THIS WILL NEED TO BE CHANGED WHEN LAUNCED BACK TO APPDATA FOLDER
-const folderId = "1f4308cY_lsJoStjR3tFhVa2TyT-txshT";
-// CURRENTLY SAVES IT UNDER THIS NAME UPDATE TO DYNAMICALLY NAME WITH TREE NAME
-const fileName = "saved_trees.json";
-/**
- * Retrieve the file ID for the existing saved_trees.json in the specified folder.
- * @param {string} token - OAuth access token from authenticateUser().
- * @returns {Promise<string|null>} - The file ID if found, otherwise null.
- */
-async function getDriveFileId(token) {
-    // Searches the folder for the file name
-    const url = `https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and '${folderId}' in parents`;
-    const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+// Folder where all tree files live:
+const folderId = '1f4308cY_lsJoStjR3tFhVa2TyT-txshT';
 
-    const data = await response.json();
-    return data.files?.[0]?.id || null;
+/**
+ * Build a safe filename for a given tree.
+ */
+function getFileNameForTree(treeName, treeId) {
+    const safe = treeName
+        .replace(/[\\/:"*?<>|]+/g, '')
+        .trim()
+        .substring(0, 50)
+        .replace(/\s+/g, '_');
+    return `${safe || 'tree'}_${treeId}.json`;
 }
-// if need can wipe the folder currently the way we 'update' files not ideal
-// this will work but update it to delete only the relavent tree file and update it
-async function clearDriveFolder(token) {
-    const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents`;
-    const response = await fetch(url, {
+
+/**
+ * Find a file with this name in our Drive folder.
+ * @returns {Promise<string|null>} fileId or null if not found
+ */
+async function getDriveFileId(token, fileName) {
+    const q = `name='${fileName.replace("'", "\\'")}' and '${folderId}' in parents and trashed=false`;
+    const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}`;
+    const resp = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` }
     });
-
-    const data = await response.json();
-    const deletePromises = data.files.map(file =>
-        // maps each file to a DELETE request
-        fetch(`https://www.googleapis.com/drive/v3/files/${file.id}`, {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${token}` }
-        })
-    );
-    await Promise.all(deletePromises);
-    console.log("Drive folder cleared.");
+    const data = await resp.json();
+    return data.files?.[0]?.id || null;
 }
 
+/**
+ * Save (create or update) a single tree JSON to Drive.
+ * @param {string} treeName
+ * @param {number} treeId
+ * @param {object} treeData — a plain-POJO representation of your tree
+ */
+export async function saveTreeToDrive(treeName, treeId, treeData) {
+    const token = await authenticateUser();
+    const fileName = getFileNameForTree(treeName, treeId);
+    const content = JSON.stringify(treeData, null, 2);
 
+    // see if it already exists
+    const existingId = await getDriveFileId(token, fileName);
+
+    if (existingId) {
+        // update via media upload (PATCH)
+        const uploadUrl = `https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=media`;
+        await fetch(uploadUrl, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: content
+        });
+        console.log(`Drive: updated tree ${treeId} → ${fileName}`);
+    } else {
+        // create new multipart file
+        const createUrl = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+        const metadata = { name: fileName, parents: [folderId] };
+        const boundary = 'boundary_string';
+        const multipartBody =
+            `--${boundary}\r\n` +
+            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+            JSON.stringify(metadata) + '\r\n' +
+            `--${boundary}\r\n` +
+            'Content-Type: application/json\r\n\r\n' +
+            content + '\r\n' +
+            `--${boundary}--`;
+
+        await fetch(createUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': `multipart/related; boundary=${boundary}`
+            },
+            body: multipartBody
+        });
+        console.log(`Drive: created tree ${treeId} → ${fileName}`);
+    }
+}

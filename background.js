@@ -1,7 +1,7 @@
 // TO-DO: back button...
 import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
-
+import { saveTreeToDrive } from "./googleDrive.js";
 
 
 let activeTree = new Tree(0, {}, []);
@@ -74,10 +74,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         message.nodeData.visited
     );
     getActiveTree().addNode(newNode);
+
+    // 1) Tell your UI to re-render
     chrome.runtime.sendMessage({ action: "renderNeeded" });
-    sendResponse({success: true});
+
+    // 2) Auto-save the updated active tree to Drive
+    (async () => {
+      try {
+        // Grab the plain data for the active tree
+        const treeObj = trees[activeTreeId];
+        const treeData = {
+          id:       activeTreeId,
+          nodeMap:  getActiveTree().nodeMap,
+          nodes:    getActiveTree().nodes,
+          name:     treeObj.name
+        };
+        await saveTreeToDrive(treeObj.name, activeTreeId, treeData);
+        console.log("Active tree auto-saved to Drive");
+      } catch (err) {
+        console.error("Failed auto-saving to Drive:", err);
+      }
+    })();
+
+    // 3) Respond to the content script immediately
+    sendResponse({ success: true });
     return;
   }
+
 
   // 2) Get a unique ID (sync response)
   if (message.action === "getId") {
@@ -164,6 +187,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     // Keep the message channel open for the async sendResponse
     return true;
+  }
+
+
+  if (message.action === "saveActiveTree") {
+    (async () => {
+      try {
+        // pull the active tree and its name
+        const treeObj = trees[activeTreeId];
+        const data = {
+          id: activeTreeId,
+          nodeMap: treeObj.tree.nodeMap,
+          nodes: treeObj.tree.nodes,
+          name: treeObj.name
+        };
+        await saveTreeToDrive(treeObj.name, activeTreeId, data);
+        sendResponse({ success: true });
+      } catch (err) {
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    return true; // keep channel open for async sendResponse
   }
 
   // 8) Other actions (no response expected)
