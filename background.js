@@ -73,6 +73,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     );
     getActiveTree().addNode(newNode);
     chrome.runtime.sendMessage({ action: "renderNeeded" });
+    sendResponse({success: true});
     return;
   }
 
@@ -81,7 +82,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("ID request received.");
     const uid = getActiveTree().getUniqueId();
     sendResponse({ uniqueId: uid });
-    return;
+    return true;
   }
 
   // 3) Return the current tree (sync response)
@@ -106,6 +107,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }));
     sendResponse({ trees: list });
     return;
+  }
+  if (message.action === "renameTree") {
+    (async () => {
+      try {
+        await treeManager.rename(message.treeId, message.newName);
+        sendResponse({ success: true });
+      } catch (err) {
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    return true;
   }
 
   // 6) Receive a snapshot from a tab (sync response)
