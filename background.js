@@ -2,6 +2,8 @@
 import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
 
+
+
 let activeTree = new Tree(0, {}, []);
 let rightClickedNodeId = -1;
 let rightClickedUrl = "";
@@ -108,16 +110,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ trees: list });
     return;
   }
+
   if (message.action === "renameTree") {
-    (async () => {
-      try {
-        await treeManager.rename(message.treeId, message.newName);
-        sendResponse({ success: true });
-      } catch (err) {
-        sendResponse({ success: false, error: err.message });
-      }
-    })();
-    return true;
+    // synchronously rename in our in-memory `trees` object
+    const id = message.treeId;
+    if (!trees[id]) {
+      sendResponse({ success: false, error: "Tree not found" });
+    } else {
+      trees[id].name = message.newName;
+      sendResponse({ success: true });
+    }
+    return;
   }
 
   // 6) Receive a snapshot from a tab (sync response)
