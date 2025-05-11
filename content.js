@@ -1,96 +1,113 @@
 // TO-DO: add detectors for pages opened via right-click
+// TO-DO: add functionality to *not* add nodes on certain conditions
+// TO-DO: change message-passing scheme to prompt user for name of unvisited node
 
-// TO-DO: add functionality to *not* add nodes on certain conditions,
-// e.g., when the page is opened from active tree page or is just being
-// scraped for title and favicon.
-
-// TO-DO: change message-passing scheme to prompt user for name of unvisited
-// node (default to the text content of the right-clicked link).
+// Helper: safely get meta tag content
+function getPageIdMeta() {
+  return document.querySelector('head meta[name="page-id"]');
+}
 
 document.addEventListener("DOMContentLoaded", async function () {
   try {
     console.log("Requesting ID");
     const response = await chrome.runtime.sendMessage({ action: "getId" });
-    console.log("Received ID: " + response.uniqueId);
+    if (chrome.runtime.lastError) {
+      console.error("getId failed:", chrome.runtime.lastError.message);
+      return;
+    }
+    console.log("Received ID:", response.uniqueId);
 
-    if (response && response.uniqueId !== undefined) {
+    if (response.uniqueId !== undefined) {
       // add a meta tag to the page containing the node ID
-      const metaTag = document.createElement("meta");
-      metaTag.name = "page-id";
+      let metaTag = getPageIdMeta();
+      if (!metaTag) {
+        metaTag = document.createElement("meta");
+        metaTag.name = "page-id";
+        document.head.appendChild(metaTag);
+      }
       metaTag.content = response.uniqueId;
-      document.head.appendChild(metaTag);
 
       chrome.storage.session.get("previousPageId", function (result) {
-        // fetch the parent ID (ID from page where link was clicked)
         let parentId = result.previousPageId;
-        // if new page was not opened by a link click
-        if (document.referrer === "") {
-          console.log("Parent ID set to 0.");
+        if (!document.referrer) {
           parentId = 0;
+          console.log("No referrer—parentId set to 0");
         }
-        console.log("Previous page ID fetched.");
-        console.log(result.previousPageId);
-        // fetch the URL of the favicon from among the link tags
+        console.log("previousPageId fetched:", result.previousPageId);
+
+        // fetch the URL of the favicon if present
         let faviconUrl = "";
-        const linkTags = document.getElementsByTagName("link");
-        for (let link of linkTags) {
-          if (link.rel === "icon" || link.rel === "shortcut icon") {
-            faviconUrl = link.href;
-            break;
-          }
-        }
+        document.querySelectorAll("link[rel~='icon']").forEach(link => {
+          if (!faviconUrl) faviconUrl = link.href;
+        });
+        console.log("favicon URL:", faviconUrl || "(none)");
 
-        // construct a new node from the previous info
-        let newNode = {
-          id: parseInt(response.uniqueId),
-          parentId: parentId,
-          url: document.location.href,
-          timestamp: new Date().toISOString(),
-          title: document.title,
-          favicon: faviconUrl,
+        // construct a new node
+        const newNode = {
+          id:          parseInt(response.uniqueId, 10),
+          parentId:    parseInt(parentId, 10),
+          url:         location.href,
+          timestamp:   new Date().toISOString(),
+          title:       document.title,
+          favicon:     faviconUrl,
+          contentType: "link",
+          visited:     true
         };
+        console.log("newNode:", newNode);
 
-        console.log(newNode);
-
+        // save this ID for the next page load
         if (document.visibilityState === "visible") {
-          console.log(
-            "Page has loaded and is visible. Setting previousPageId."
-          );
           chrome.storage.session.set({ previousPageId: response.uniqueId });
+          console.log("session.previousPageId set to", response.uniqueId);
         }
 
-        // send message to background script to add the node to the tree
-        chrome.runtime.sendMessage({ action: "addNode", nodeData: newNode });
+        // send message to background script to add the node
+        chrome.runtime.sendMessage(
+            { action: "addNode", nodeData: newNode },
+            resp => {
+              if (chrome.runtime.lastError) {
+                console.error("addNode failed:", chrome.runtime.lastError.message);
+              } else if (!resp.success) {
+                console.error("addNode error:", resp.error);
+              } else {
+                console.log("addNode succeeded");
+                chrome.runtime.sendMessage({ action: 'renderNeeded' });
+              }
+            }
+        );
       });
     } else {
-      console.warn("No ID received.");
+      console.warn("No ID received from getId");
     }
   } catch (error) {
-    console.error("Error with ID", error);
+    console.error("Error in DOMContentLoaded handler:", error);
   }
 });
 
-// general click event listener for entire page
+// Update previousPageId and context menu on visibility change
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
-    // get the page id from the meta element named page-id inside head
-    const pageId = document.querySelector('head meta[name="page-id"]').content;
+    const metaTag = getPageIdMeta();
+    if (!metaTag) {
+      console.warn("No page-id meta tag found on visibilitychange, skipping");
+      return;
+    }
+    const pageId = metaTag.content;
     chrome.storage.session.set({ previousPageId: pageId });
     chrome.runtime.sendMessage({ action: "setContentScriptContextMenu" });
   }
 });
 
-// listen for messages relating to node closure
+// Handle deletion updates
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "nodeDeleted") {
-    let metaTag = document.querySelector('head meta[name="page-id"]');
+    let metaTag = getPageIdMeta();
     if (metaTag) {
       if (metaTag.content === message.deletedId) {
         metaTag.content = message.newParentId;
       }
     } else {
       console.warn("No meta tag found. Creating meta tag.");
-
       metaTag = document.createElement("meta");
       metaTag.name = "page-id";
       metaTag.content = message.newParentId;
@@ -99,23 +116,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// Context menu tracking
 document.addEventListener("contextmenu", (event) => {
   const link = event.target.closest("a[href]");
-  let url = "";
-  if (link) {
-    url = link.href;
+  let url = link ? link.href : "";
+
+  const metaTag = getPageIdMeta();
+  if (!metaTag) {
+    console.warn("No page-id meta tag found on contextmenu");
+  } else {
+    const pageId = metaTag.content;
+    chrome.runtime.sendMessage({ action: "setRightClickedNodeId", nodeId: pageId });
   }
 
-  let metaTag = document.querySelector('head meta[name="page-id"]');
-  const pageId = metaTag.content;
-
-  chrome.runtime.sendMessage({
-    action: "setRightClickedNodeId",
-    nodeId: pageId,
-  });
-
-  chrome.runtime.sendMessage({
-    action: "setRightClickedUrl",
-    url: url,
-  });
+  chrome.runtime.sendMessage({ action: "setRightClickedUrl", url: url });
 });
+

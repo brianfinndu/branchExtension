@@ -18,4 +18,28 @@ document.getElementById("download-btn").addEventListener("click", async () => {
 
     URL.revokeObjectURL(url);
   });
+  // Save all trees up to Drive
+  document.getElementById("save-btn").addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "saveTrees" }, (resp) => {
+      if (resp.success) {
+        alert("All trees saved to Drive!");
+      } else {
+        alert("Save failed: " + resp.error);
+      }
+    });
+  });
+
+// Load all trees from Drive
+  document.getElementById("load-btn").addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "loadTrees" }, (resp) => {
+      if (resp.success) {
+        alert("Trees loaded from Drive! Refreshing view…");
+        // trigger re-render of whatever view you need
+        chrome.runtime.sendMessage({ action: "renderNeeded" });
+      } else {
+        alert("Load failed: " + resp.error);
+      }
+    });
+  });
+
 });

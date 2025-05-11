@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tree Manager</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        .tree-entry {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        button {
+            margin-left: 10px;
+        }
+        .return-button {
+            background-color: #31312f;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+        .return-button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+<h1>Manage Trees</h1>
+
+<button id="create-tree-btn">Create New Tree</button>
+<div id="tree-list"></div>
+
+<a href="branch.html" title="Dashboard">
+    <button class="return-button">Return to Dashboard</button>
+</a>
+
+<script src="treeManager.js" type="module"></script>
+</body>
+</html>

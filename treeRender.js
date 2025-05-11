@@ -4,6 +4,51 @@
 // incl onMessage listening for node deletion
 
 let hoveringLi = null;
+let myTree = {
+  nodeMap: {},
+  nodes: [],
+  getAllNodes() {
+    return this.nodes;
+  }
+};
+
+async function loadTree(treeId) {
+  try {
+    // ask background for the tree with this ID
+    const response = await chrome.runtime.sendMessage({
+      action: "getTree",
+      treeId
+    });
+    if (chrome.runtime.lastError) {
+      console.error("loadTree sendMessage error:", chrome.runtime.lastError);
+      return;
+    }
+    const active = response.activeTree;
+    // overwrite our in-memory tree
+    myTree.nodeMap = active.nodeMap;
+    myTree.nodes   = active.nodes;
+    // clear out the old UI and draw again
+    document.body.innerHTML = "";
+    document.body.appendChild(
+        traverse("0", myTree.nodeMap, myTree.nodes)
+    );
+    // re-attach the popup container
+    const hoverPopup = document.createElement("div");
+    hoverPopup.id = "hover-popup";
+    document.body.appendChild(hoverPopup);
+  } catch (err) {
+    console.error("loadTree failed:", err);
+  }
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "snapshotTree") {
+    sendResponse({ nodes: myTree.getAllNodes() });
+  }
+  if (message.action === "loadTree") {
+    loadTree(message.treeId);
+  }
+});
 
 document.addEventListener("DOMContentLoaded", async function () {
   chrome.contextMenus.removeAll(() => {
@@ -49,8 +94,8 @@ function traverse(rootIndex, nodeMap, nodes) {
     event.stopPropagation();
     let dragText = document.createElement("div");
     dragText.textContent = [...event.target.childNodes]
-      .filter((node) => node.nodeType === Node.TEXT_NODE)
-      .map((node) => node.textContent);
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent);
     dragText.style.position = "absolute";
     dragText.style.top = "-9999px";
     document.body.appendChild(dragText);
@@ -139,7 +184,7 @@ document.addEventListener("mousemove", (event) => {
 document.addEventListener("mouseout", (event) => {
   if (event.target.closest("li") === hoveringLi) {
     let hoverPopup = document.getElementById("hover-popup");
-    hoverPopup.innerHTML = "";
+    hoverPopup.innerHTML = " ";
     hoverPopup.style.display = "none";
     hoveringLi = null;
   }
@@ -158,6 +203,7 @@ document.addEventListener("contextmenu", (event) => {
     nodeId: nodeId,
   });
 });
+
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
@@ -199,7 +245,7 @@ async function renderTree() {
     console.log(response);
     document.body.innerHTML = "";
     document.body.appendChild(
-      traverse("0", response.activeTree.nodeMap, response.activeTree.nodes)
+        traverse("0", response.activeTree.nodeMap, response.activeTree.nodes)
     );
     const hoverPopup = document.createElement("div");
     hoverPopup.id = "hover-popup";
