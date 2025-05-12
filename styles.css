@@ -1,128 +1,128 @@
 @font-face {
-    font-family: 'BobbyJones';
-    src: url('fonts/Bobby Jones.otf') format('opentype'); 
-    font-weight: normal;
-    font-style: normal;
+  font-family: "BobbyJones";
+  src: url("fonts/Bobby Jones.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
 }
 /*General purpose*/
 body {
-    font-family: 'Fira Sans', sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    text-align: center;
-    padding: 20px;
+  font-family: "Fira Sans", sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  text-align: center;
+  padding: 20px;
 }
 .container {
-    max-width: 600px;
-    min-width: 250px;
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 10px;
+  max-width: 600px;
+  min-width: 250px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
 }
 .header {
-    font-family: 'BobbyJones', sans-serif; 
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    position: relative;
-    font-size: 40px;
-    font-weight: bold;
-    color: #2a543c;
+  font-family: "BobbyJones", sans-serif;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+  font-size: 40px;
+  font-weight: bold;
+  color: #2a543c;
 }
 .logo {
-    width: 45px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 45px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .subtitle {
-    margin-left: auto;
-    font-size: 11px;
-    color: #666;
-    font-family: 'Fira Sans', sans-serif;
+  margin-left: auto;
+  font-size: 11px;
+  color: #666;
+  font-family: "Fira Sans", sans-serif;
 }
 .return-button {
-    background-color: #31312f;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-top: 12px;
-    font-weight: bold
+  background-color: #31312f;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 12px;
+  font-weight: bold;
 }
 .return-button:hover {
-    background-color: #a6a5a5;
-    transition: background-color 0.3s ease;
+  background-color: #a6a5a5;
+  transition: background-color 0.3s ease;
 }
 .dark-mode body {
-    background-color: #3e3c3c;
-    color: #f5f5f5;
+  background-color: #3e3c3c;
+  color: #f5f5f5;
 }
 .dark-mode .header {
-    color: #f5f5f5;
+  color: #f5f5f5;
 }
 .dark-mode .logo {
-    filter: brightness(2);
+  filter: brightness(2);
 }
 
 /*For settings page*/
 .dark-mode .bar {
-    background: #333;
-    color: #f5f5f5;
+  background: #333;
+  color: #f5f5f5;
 }
 .dark-mode .bar-no-arrows {
-    background: #333; 
-    color: #f5f5f5; 
+  background: #333;
+  color: #f5f5f5;
 }
 .dark-mode .arrow img {
-    filter: invert(1); 
+  filter: invert(1);
 }
 .dark-mode .return-button {
-    background-color: #f5f5f5;
-    color: #31312f;
+  background-color: #f5f5f5;
+  color: #31312f;
 }
 .dark-mode .return-button:hover {
-    background-color: #31312f;
-    color: #f5f5f5;
-    transition: background-color 0.3s ease;
+  background-color: #31312f;
+  color: #f5f5f5;
+  transition: background-color 0.3s ease;
 }
 
 /* For dashboard page */
 .dark-mode .current-branch {
-    background: #30302f;
-    color: #f5f5f5;
+  background: #30302f;
+  color: #f5f5f5;
 }
 .dark-mode .tree-button {
-    background: #858585;
-    color: #f5f5f5;
+  background: #858585;
+  color: #f5f5f5;
 }
 .dark-mode .tree-button:hover {
-    background: #f5f5f5;
-    color: #31312f;
-    transition: background-color 0.3s ease;
+  background: #f5f5f5;
+  color: #31312f;
+  transition: background-color 0.3s ease;
 }
 
 /* For tree management page */
-.dark-mode .start-button{
-    background: #858585;
-    color: #f5f5f5;
+.dark-mode .start-button {
+  background: #858585;
+  color: #f5f5f5;
 }
-.dark-mode .start-button:hover{
-    background: #f5f5f5;
-    color: #31312f;
-    transition: background-color 0.3s ease;
+.dark-mode .start-button:hover {
+  background: #f5f5f5;
+  color: #31312f;
+  transition: background-color 0.3s ease;
 }
-.dark-mode .card{
-    background: #30302f;
-    color: #f5f5f5;
+.dark-mode .card {
+  background: #30302f;
+  color: #f5f5f5;
 }
-.dark-mode .timestamp{
-    color: #f5f5f5;
+.dark-mode .timestamp {
+  color: #f5f5f5;
 }
-.dark-mode .button-grid button{
-    background: #f5f5f5;
-    color: #31312f;
+.dark-mode .button-grid button {
+  background: #f5f5f5;
+  color: #31312f;
 }
