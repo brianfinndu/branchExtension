@@ -233,8 +233,8 @@
             color: #c6c7c8;
         }
         .current-branch{
-            background-color: #31312f;
-            color: white;
+            background-color: #8b8b8b;
+            color: #31312f;
             border-radius: 10px;
             padding: 10px 20px;
             font-weight: bold;
@@ -252,14 +252,15 @@
             font-size: 14px;
             border: none;
             border-radius: 6px;
-            background-color: #31312f;
-            color: white;
-            cursor: pointer;
+            background-color: #ababa9;
+            color: #313131;
             margin-left: 10px;
             font-family: 'Fira Sans', sans-serif;
         }
         .tree-button:hover {
-            background-color: #444;
+            background-color: #31312f;
+            color: #f5f5f5;
+            transition: background-color 0.3s ease;
         }
        
     </style>
@@ -282,17 +283,13 @@
             <hr class="branch-divider">
         </div>
         <div class="current-branch">
-            <span id="current-branch-title">Active Tree: </span>
-            <span id="current-branch-name">Main</span>
+            <span id="current-branch-title">active tree: </span>
+            <span id="current-branch-name">main</span>
         <div class="tree-button-container"></div>
             <button class="tree-button" onclick="viewActiveTree()">view active tree</button>
             <button class="tree-button" onclick="manageTree()">manage tree</button>
 </div>
-
-
-
 </div>
-
 </body>
 >>>>>>> 1f81e51 (new dashboard)
 >>>>>>> 44715b2 (new dashboard)
