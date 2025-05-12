@@ -19,14 +19,18 @@
             font-family: 'BobbyJones', sans-serif;
             display: flex;
             align-items: center;
-            justify-content: flex-start; 
+            justify-content: space-between;
+            width: 100%;
             font-size: 40px;
             font-weight: bold;
             color: #2a543c;
-            position: absolute; 
-            top: 20px;
-            left: 20px;
-          }
+            margin-bottom: 20px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .render-button {
             background-color: #31312f;
             color: white;
@@ -40,35 +44,25 @@
         .render-button:hover {
             background-color: #b6b3b3;
         }
-        .return-button {
-            background-color: #31312f;
-            color: white;
-            border-radius: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-            margin-left: 20px;
-            font-weight: bold;
-        }
+
 
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <span>BRANCH</span>
-            <div class="logo">
-                <img src="images/branchLogo.png" alt="Extension Logo" width="30">
-            </div>
-                    <a href="branch.html" title="Dashboard">
-            <button class="return-button">return to dashboard</button>
-        </a>
+<div class="header">
+    <div class="header-left">
+        <span>BRANCH</span>
+        <div class="logo">
+            <img src="images/branchLogo.png" alt="Extension Logo" width="30">
         </div>
     </div>
+    <a href="dashboard.html" title="Dashboard">
+        <button class="return-button">return to dashboard</button>
+    </a>
+</div>
+
         <button id="render-btn" class="render-button">render tree</button>
         <ul id="root"></ul>
-
-
-
     <script src="treeRender.js"></script>
 </body>
 </html>

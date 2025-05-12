@@ -91,3 +91,38 @@ body {
 }
 
 /* For dashboard page */
+.dark-mode .current-branch {
+    background: #30302f;
+    color: #f5f5f5;
+}
+.dark-mode .tree-button {
+    background: #858585;
+    color: #f5f5f5;
+}
+.dark-mode .tree-button:hover {
+    background: #f5f5f5;
+    color: #31312f;
+    transition: background-color 0.3s ease;
+}
+
+/* For tree management page */
+.dark-mode .start-button{
+    background: #858585;
+    color: #f5f5f5;
+}
+.dark-mode .start-button:hover{
+    background: #f5f5f5;
+    color: #31312f;
+    transition: background-color 0.3s ease;
+}
+.dark-mode .card{
+    background: #30302f;
+    color: #f5f5f5;
+}
+.dark-mode .timestamp{
+    color: #f5f5f5;
+}
+.dark-mode .button-grid button{
+    background: #f5f5f5;
+    color: #31312f;
+}
