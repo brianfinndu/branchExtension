@@ -1,110 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>branch</title>
-    <link rel="stylesheet" href="bulma.min.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="common.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
-      .title-container {
-        display: flex;
-        align-items: center;
-        white-space: nowrap; /* Ensures the text stays on one line */
-        overflow: hidden; /* Hides any overflow */
-      }
-      .title-container .title {
-        margin-right: 1px; /* Adds some space between the title and the image */
-      }
-      .flex-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+        .top-right-icons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 15px;
+        }
+        .top-right-icons a {
+            color: #857f79;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .top-right-icons a:hover {
+            color: #c6c7c8;
+        }
+        
     </style>
-  </head>
-  <body>
-    <section>
-      <div class="px-1 py-1">
-        <!--padding for entire menu -->
-        <section class="section">
-          <div class="container">
-            <article class="media title-container">
-              <div class="media-content">
-                <h1 class="title is-size-3">BRANCH</h1>
-              </div>
-              <figure class="media-right">
-                <p class="image is-16x16">
-                  <img src="branchLogo.png" alt="Example Image" />
-                </p>
-              </figure>
-            </article>
-          </div>
-        </section>
-
-        <div class="box p-3">
-          <!--first node-->
-          <h1 class="title is-size-6">sample tree node</h1>
-          <!--node title-->
-          <div class="container">
-            <div class="flex-container">
-              <p class="is-size-7"># nodes</p>
-              <p class="is-size-7">last node visited 10/12/24</p>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span>BRANCH</span>
+            <div class="logo">
+              <img src="images/branchLogo.png" alt="Extension Logo" width="30">
             </div>
-          </div>
+            <div class="top-right-icons">
+                <a href="settings.html" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <a href="upload.html" title="Upload">
+                    <i class="fas fa-upload"></i>
+                </a>
+            </div>
         </div>
 
-        <div class="box p-3">
-          <!--second node-->
-          <h1 class="title is-size-6">sample tree node</h1>
-          <!--node title-->
-          <div class="container">
-            <div class="flex-container">
-              <p class="is-size-7"># nodes</p>
-              <p class="is-size-7">last node visited 10/12/24</p>
-            </div>
-          </div>
-        </div>
 
-        <div class="box p-3">
-          <!--third node-->
-          <h1 class="title is-size-6">sample tree node</h1>
-          <!--node title-->
-          <div class="container">
-            <div class="flex-container">
-              <p class="is-size-7"># nodes</p>
-              <p class="is-size-7">last node visited 10/12/24</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <input type="button" value="Open Tree Render" id="render-page-btn" />
-    </section>
-      <!-- File Upload Button -->
-<input type="file" id="uploadTreeFile" class="btn" accept=".json">
-
-    <!-- Download Button -->
-    <style>
-      .btn {
-        background-color: DodgerBlue;
-        border: none;
-        color: white;
-        padding: 12px 30px;
-        cursor: pointer;
-        font-size: 20px;
-      }
-      
-      /* Darker background on mouse-over */
-      .btn:hover {
-        background-color: RoyalBlue;
-      }
-      </style>
-      
-      <button id="downloadTreeButton" class="btn" style="width:100%">
-        <i class="fa fa-download"></i> Download Tree as JSON
-      </button>
-        <script src="Tree.js"></script>
-    <script src="TreeNode.js"></script>
-    <script src="branchTest.js"></script>
-  </body>
+</body>
 </html>

@@ -4,9 +4,10 @@
     font-weight: normal;
     font-style: normal;
 }
+/*General purpose*/
 body {
     font-family: 'Fira Sans', sans-serif;
-    background-color: #ffffff;
+    background-color: #f5f5f5;
     margin: 0;
     text-align: center;
     padding: 20px;
@@ -36,17 +37,57 @@ body {
     justify-content: center;
     align-items: center;
 }
-
+.subtitle {
+    margin-left: auto;
+    font-size: 11px;
+    color: #666;
+    font-family: 'Fira Sans', sans-serif;
+}
+.return-button {
+    background-color: #31312f;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 12px;
+    font-weight: bold
+}
+.return-button:hover {
+    background-color: #a6a5a5;
+    transition: background-color 0.3s ease;
+}
 .dark-mode body {
     background-color: #3e3c3c;
-    color: white;
+    color: #f5f5f5;
+}
+.dark-mode .header {
+    color: #f5f5f5;
+}
+.dark-mode .logo {
+    filter: brightness(2);
 }
 
+/*For settings page*/
 .dark-mode .bar {
     background: #333;
-    color: white;
+    color: #f5f5f5;
 }
-
+.dark-mode .bar-no-arrows {
+    background: #333; 
+    color: #f5f5f5; 
+}
 .dark-mode .arrow img {
     filter: invert(1); 
 }
+.dark-mode .return-button {
+    background-color: #f5f5f5;
+    color: #31312f;
+}
+.dark-mode .return-button:hover {
+    background-color: #31312f;
+    color: #f5f5f5;
+    transition: background-color 0.3s ease;
+}
+
+/* For dashboard page */
