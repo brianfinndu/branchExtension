@@ -1,7 +1,6 @@
 const textOptions = [
-  ["follow branch on link click", "new tree on same tab"],
-  ["new tree on new tab", "reuse existing tab"],
-  ["light mode", "dark mode"],
+  ["new tree on startup", "load last active tree on startup"],
+  ["light mode", "dark mode", "custom"],
 ];
 
 function changeText(index, direction) {
@@ -9,15 +8,24 @@ function changeText(index, direction) {
   const options = textOptions[index];
   let currentIndex = options.indexOf(textElement.textContent);
   currentIndex = (currentIndex + direction + options.length) % options.length;
-  textElement.textContent = options[currentIndex];
-}
+  const newValue = options[currentIndex];
+  textElement.textContent = newValue;
 
-function openColorPicker(index) {
-  document.getElementById(`colorPicker${index}`).click();
-}
+  // Theme toggle logic
+  if (index === 1) {
+    const customColors = document.getElementById("customColors");
 
-function changeColor(index) {
-  const picker = document.getElementById(`colorPicker${index}`);
-  document.querySelectorAll(".color-option")[index].style.backgroundColor =
-    picker.value;
+    // Show/hide color pickers
+    customColors.style.display = newValue === "custom" ? "block" : "none";
+
+    // Toggle dark mode
+    const isDarkMode = newValue === "dark mode";
+    document.documentElement.classList.toggle("dark-mode", isDarkMode);
+
+    chrome.storage.sync.set({ darkMode: isDarkMode });
+    chrome.runtime.sendMessage({
+      action: "toggleDarkMode",
+      enabled: isDarkMode,
+    });
+  }
 }
