@@ -38,8 +38,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<<<<<<< HEAD
   <title>Tree Management</title>
 =======
+<<<<<<< HEAD
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -49,6 +51,10 @@
 =======
   <title>Tree Management</title>
 >>>>>>> 426fd78 (dark mode styles)
+=======
+  <title>Dashboard</title>
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
   <link rel="stylesheet" href="styles.css"/>
   <script src="common.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
@@ -56,6 +62,9 @@
   <style>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5a603d0 (Create tree-management.html)
       .header {
       font-family: 'BobbyJones', sans-serif;
       display: flex;
@@ -71,6 +80,22 @@
         display: flex;
         align-items: center;
         gap: 10px;
+=======
+    .top-right-icons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 15px;
+    }
+    .top-right-icons a {
+      color: #857f79;
+      text-decoration: none;
+      font-size: 18px;
+    }
+    .top-right-icons a:hover {
+      color: #c6c7c8;
+>>>>>>> c86b520 (Create tree-management.html)
     }
     .start-button-container {
 >>>>>>> 426fd78 (dark mode styles)
@@ -241,6 +266,9 @@
       cursor: pointer;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5a603d0 (Create tree-management.html)
       font-weight: bold;
       font-family: 'Fira Sans', sans-serif;
     }
@@ -251,6 +279,7 @@
     }
     .start-button:hover {
       background-color: #f0f0f0;
+<<<<<<< HEAD
 >>>>>>> 01641de (Create tree-management.html)
 =======
       font-weight: bold;
@@ -259,6 +288,9 @@
     .start-button:hover {
       background-color: #a6a5a5;
 >>>>>>> 426fd78 (dark mode styles)
+=======
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
       color: #444;
       transition: background-color 0.3s ease;
     }
@@ -285,6 +317,7 @@
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     .timestamp {
 =======
     .subtitle {
@@ -292,6 +325,12 @@
 =======
     .timestamp {
 >>>>>>> 426fd78 (dark mode styles)
+=======
+    .timestamp {
+=======
+    .subtitle {
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
       font-size: 12px;
       color: #555;
       margin-top: 4px;
@@ -311,12 +350,18 @@
       color: white;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       font-family: 'Fira Sans', sans-serif;
 =======
 >>>>>>> 01641de (Create tree-management.html)
 =======
       font-family: 'Fira Sans', sans-serif;
 >>>>>>> 426fd78 (dark mode styles)
+=======
+      font-family: 'Fira Sans', sans-serif;
+=======
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
       cursor: pointer;
     }
     .button-grid button:hover {
@@ -328,12 +373,18 @@
     }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 01641de (Create tree-management.html)
 =======
 
 >>>>>>> 426fd78 (dark mode styles)
+=======
+
+=======
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
   </style>
 </head>
 <body>
@@ -341,8 +392,11 @@
     <div class="header">
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 426fd78 (dark mode styles)
+=======
+>>>>>>> 5a603d0 (Create tree-management.html)
     <div class="header-left">
         <span>BRANCH</span>
         <div class="logo">
@@ -371,6 +425,7 @@
           <i class="fas fa-upload"></i>
         </a>
       </div>
+<<<<<<< HEAD
 =======
 >>>>>>> 426fd78 (dark mode styles)
     </div>
@@ -383,12 +438,24 @@
 </div>
 
 >>>>>>> 01641de (Create tree-management.html)
+=======
+    </div>
+    <div class="start-button-container">
+  <button class="start-button" onclick="startNewTree()">Start New Tree</button>
+</div>
+
+
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
     <!-- Example Tree Card -->
     <div class="card">
       <div class="text-content">
         <div class="title">TREE NAME</div>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5a603d0 (Create tree-management.html)
         <div class="timestamp">Last change: 5/4/25</div>
       </div>
       <div class="button-grid">
@@ -404,6 +471,7 @@
         <button onclick="deleteTree(this)">Delete</button>
         <button onclick="setActiveTree(this)">Set Active</button>
         <button onclick="exportTree(this)">Export</button>
+<<<<<<< HEAD
 >>>>>>> 01641de (Create tree-management.html)
 =======
         <div class="timestamp">Last change: 5/4/25</div>
@@ -414,6 +482,9 @@
         <button onclick="setActiveTree(this)">set active</button>
         <button onclick="exportTree(this)">export</button>
 >>>>>>> 426fd78 (dark mode styles)
+=======
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
       </div>
     </div>
 
@@ -422,6 +493,9 @@
         <div class="title">TREE NAME</div>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5a603d0 (Create tree-management.html)
         <div class="timestamp">Last change: 5/4/25</div>
       </div>
       <div class="button-grid">
@@ -435,6 +509,7 @@
   
 =======
         <div class="subtitle">Last change: 5/4/25</div>
+<<<<<<< HEAD
 =======
         <div class="timestamp">Last change: 5/4/25</div>
 >>>>>>> 426fd78 (dark mode styles)
@@ -453,6 +528,19 @@
         </div>
   
 >>>>>>> 426fd78 (dark mode styles)
+=======
+      </div>
+      <div class="button-grid">
+        <button onclick="renameTree(this)">Rename</button>
+        <button onclick="deleteTree(this)">Delete</button>
+        <button onclick="setActiveTree(this)">Set Active</button>
+        <button onclick="exportTree(this)">Export</button>
+      </div>
+
+    </div>
+  </div>
+>>>>>>> c86b520 (Create tree-management.html)
+>>>>>>> 5a603d0 (Create tree-management.html)
 
   <script>
     function renameTree(button) {
