@@ -3,6 +3,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,6 +39,8 @@
 =======
 =======
 >>>>>>> dc2ed41 (Create tree-management.html)
+=======
+>>>>>>> dd11327 (dark mode styles)
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -81,6 +84,8 @@
 >>>>>>> eb07e52 (dark mode styles)
 =======
 =======
+=======
+>>>>>>> 89a774c (dark mode styles)
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -180,12 +185,47 @@
 =======
       }
       .start-button-container {
+<<<<<<< HEAD
 >>>>>>> 645f26c (Create tree-management.html)
+<<<<<<< HEAD
 >>>>>>> dc2ed41 (Create tree-management.html)
+=======
+=======
+=======
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tree Management</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="common.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+      .header {
+      font-family: 'BobbyJones', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 40px;
+      font-weight: bold;
+      color: #2a543c;
+      margin-bottom: 20px;
+    }
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .start-button-container {
+>>>>>>> 426fd78 (dark mode styles)
+>>>>>>> 89a774c (dark mode styles)
+>>>>>>> dd11327 (dark mode styles)
         width: 100%;
         display: flex;
         justify-content: flex-start;
         margin-bottom: 10px;
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -317,6 +357,8 @@
 >>>>>>> 01641de (Create tree-management.html)
 =======
 >>>>>>> dc2ed41 (Create tree-management.html)
+=======
+>>>>>>> dd11327 (dark mode styles)
     }
     .start-button {
       background-color: #31312f;
@@ -698,6 +740,8 @@
         titleEl.textContent = newName.trim();
 =======
 >>>>>>> 645f26c (Create tree-management.html)
+=======
+>>>>>>> 89a774c (dark mode styles)
       }
       .start-button {
         background-color: #31312f;
@@ -813,6 +857,171 @@
     </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    <script>
+      function renameTree(button) {
+        const card = button.closest(".card");
+        const titleEl = card.querySelector(".title");
+        const currentName = titleEl.textContent;
+
+        const newName = prompt("Enter new tree name:", currentName);
+        if (newName && newName.trim() !== "") {
+          titleEl.textContent = newName.trim();
+=======
+    }
+    .start-button {
+      background-color: #31312f;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: 'Fira Sans', sans-serif;
+    }
+    .start-button:hover {
+      background-color: #a6a5a5;
+      color: #444;
+      transition: background-color 0.3s ease;
+    }
+    .card {
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      margin-bottom: 12px;
+      padding: 16px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      flex-wrap: wrap;
+      min-width: 200px;
+    }
+    .text-content {
+      flex: 1;
+      min-width: 100px;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .timestamp {
+      font-size: 12px;
+      color: #555;
+      margin-top: 4px;
+    }
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(2, auto);
+      grid-gap: 10px;
+      margin-left: 20px;
+    }
+    .button-grid button {
+      padding: 10px 14px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background-color: #31312f;
+      color: white;
+      font-family: 'Fira Sans', sans-serif;
+      cursor: pointer;
+    }
+    .button-grid button:hover {
+      background-color: #444;
+    }
+    button:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+    <div class="header-left">
+        <span>BRANCH</span>
+        <div class="logo">
+            <img src="images/branchLogo.png" alt="Extension Logo" width="30">
+        </div>
+    </div>
+    <a href="dashboard.html" title="Dashboard">
+        <button class="return-button">return to dashboard</button>
+    </a>
+</div>
+    <div class="start-button-container">
+  <button class="start-button" onclick="startNewTree()">start new tree</button>
+</div>
+
+    <!-- Example Tree Card -->
+    <div class="card">
+      <div class="text-content">
+        <div class="title">TREE NAME</div>
+        <div class="timestamp">Last change: 5/4/25</div>
+      </div>
+      <div class="button-grid">
+        <button onclick="renameTree(this)">rename</button>
+        <button onclick="deleteTree(this)">delete</button>
+        <button onclick="setActiveTree(this)">set active</button>
+        <button onclick="exportTree(this)">export</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="text-content">
+        <div class="title">TREE NAME</div>
+        <div class="timestamp">Last change: 5/4/25</div>
+      </div>
+      <div class="button-grid">
+        <button onclick="renameTree(this)">rename</button>
+        <button onclick="deleteTree(this)">delete</button>
+        <button onclick="setActiveTree(this)">set active</button>
+        <button onclick="exportTree(this)">export</button>
+      </div>
+    </div>
+        </div>
+  
+
+  <script>
+    function renameTree(button) {
+      const card = button.closest('.card');
+      const titleEl = card.querySelector('.title');
+      const currentName = titleEl.textContent;
+
+      const newName = prompt("Enter new tree name:", currentName);
+      if (newName && newName.trim() !== "") {
+        titleEl.textContent = newName.trim();
+      }
+    }
+
+    function deleteTree(button) {
+      const card = button.closest('.card');
+      const confirmed = confirm("Are you sure you want to delete this tree?");
+      if (confirmed) {
+        card.remove();
+      }
+    }
+  function renameTree(button) {
+    const card = button.closest('.card');
+    const titleEl = card.querySelector('.title');
+    const currentName = titleEl.textContent;
+
+    const newName = prompt("Enter new tree name:", currentName);
+    if (newName && newName.trim() !== "") {
+      titleEl.textContent = newName.trim();
+    }
+  }
+
+  function deleteTree(button) {
+    const card = button.closest('.card');
+    const confirmed = confirm("Are you sure you want to delete this tree?");
+    if (confirmed) {
+      card.remove();
+    }
+  }
+
+>>>>>>> dd11327 (dark mode styles)
   function setActiveTree(button) {
     // Optional: reset all cards to enable rename/delete
     document.querySelectorAll('.card').forEach(card => {
@@ -823,6 +1032,9 @@
           btn.style.opacity = "1";
           btn.style.pointerEvents = "auto";
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dd11327 (dark mode styles)
 >>>>>>> 426fd78 (dark mode styles)
         }
       }
