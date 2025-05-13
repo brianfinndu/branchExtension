@@ -1,29 +1,11 @@
-// TO-DO: right-clicks don't register as clicks...
+// TO-DO: add detectors for pages opened via right-click
 
-/*
+// TO-DO: add functionality to *not* add nodes on certain conditions,
+// e.g., when the page is opened from active tree page or is just being
+// scraped for title and favicon.
 
-content script which runs on every page after load to
-- listen for page events
-- add itself to the tree
-- add page metadata
-- communicate with background script as necessary
-
-content scripts
-- handle links clicked directly on a page
-- detect when right click occurs and store relevant info
-
-event loop (direct click):
-- detect link clicked (URL change)
-- get parent ID from page metadata and store in chrome.storage.session
-- get TreeNode info from new page, retrieve parent ID from chrome.storage.session
-- add the newly-created node to the tree
-
-event loop (right click):
-- detect contents of right-clicked node
-- write link to "mostRecentLinkClickPageId" in chrome.storage.session
-- implementing later
-
-*/
+// TO-DO: change message-passing scheme to prompt user for name of unvisited
+// node (default to the text content of the right-clicked link).
 
 document.addEventListener("DOMContentLoaded", async function () {
   try {
@@ -90,12 +72,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 // general click event listener for entire page
 document.addEventListener("visibilitychange", () => {
-  // if the page has just become focused
-  console.log("Page has become visible. Setting previousPageId.");
   if (document.visibilityState === "visible") {
     // get the page id from the meta element named page-id inside head
     const pageId = document.querySelector('head meta[name="page-id"]').content;
     chrome.storage.session.set({ previousPageId: pageId });
+    chrome.runtime.sendMessage({ action: "setContentScriptContextMenu" });
   }
 });
 
@@ -116,4 +97,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       document.head.appendChild(metaTag);
     }
   }
+});
+
+document.addEventListener("contextmenu", (event) => {
+  const link = event.target.closest("a[href]");
+  let url = "";
+  if (link) {
+    url = link.href;
+  }
+
+  let metaTag = document.querySelector('head meta[name="page-id"]');
+  const pageId = metaTag.content;
+
+  chrome.runtime.sendMessage({
+    action: "setRightClickedNodeId",
+    nodeId: pageId,
+  });
+
+  chrome.runtime.sendMessage({
+    action: "setRightClickedUrl",
+    url: url,
+  });
 });
