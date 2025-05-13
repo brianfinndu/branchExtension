@@ -5,84 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>branch</title>
     <style>
-      .title-container {
+      #header {
+        width: 300px;
         display: flex;
         align-items: center;
-        white-space: nowrap; /* Ensures the text stays on one line */
-        overflow: hidden; /* Hides any overflow */
-      }
-      .title-container .title {
-        margin-right: 1px; /* Adds some space between the title and the image */
-      }
-      .flex-container {
-        display: flex;
         justify-content: space-between;
+      }
+      #title-content {
+        display: flex;
         align-items: center;
+      }
+      #nav-container {
+        display: flex;
+        align-items: center;
+      }
+      img {
+        width: 32px;
+        height: 32px;
+        margin-left: 8px;
       }
     </style>
   </head>
   <body>
-    <section>
-      <div class="px-1 py-1">
-        <!--padding for entire menu -->
-        <section class="section">
-          <div class="container">
-            <article class="media title-container">
-              <div class="media-content">
-                <h1 class="title is-size-3">BRANCH</h1>
-              </div>
-              <figure class="media-right">
-                <p class="image is-16x16">
-                  <img src="./images/branchLogo.png" alt="Example Image" />
-                </p>
-              </figure>
-            </article>
-          </div>
-        </section>
-
-        <div class="box p-3">
-          <!--first node-->
-          <h1 class="title is-size-6">sample tree node</h1>
-          <!--node title-->
-          <div class="container">
-            <div class="flex-container">
-              <p class="is-size-7"># nodes</p>
-              <p class="is-size-7">last node visited 10/12/24</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="box p-3">
-          <!--second node-->
-          <h1 class="title is-size-6">sample tree node</h1>
-          <!--node title-->
-          <div class="container">
-            <div class="flex-container">
-              <p class="is-size-7"># nodes</p>
-              <p class="is-size-7">last node visited 10/12/24</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="box p-3">
-          <!--third node-->
-          <h1 class="title is-size-6">sample tree node</h1>
-          <!--node title-->
-          <div class="container">
-            <div class="flex-container">
-              <p class="is-size-7"># nodes</p>
-              <p class="is-size-7">last node visited 10/12/24</p>
-            </div>
-          </div>
-        </div>
+    <div id="header">
+      <div id="title-content">
+        <h1>BRANCH</h1>
+        <img src="./images/branchLogo.png" alt="Example Image" />
       </div>
+      <div id="nav-container">
+        <a href="upload.html">
+          <input type="button" value="import" />
+        </a>
+        <a href="settings.html">
+          <input type="button" value="settings" />
+        </a>
+      </div>
+    </div>
 
-      <input type="button" value="Open Tree Render" id="render-page-btn" />
-      <a href="upload.html" title="Open Upload Page">
-        <button>Open Upload Page</button>
-      </a>
-      <input type="button" value="Download Tree" id="download-btn" />
-    </section>
-    <script src="branchTest.js"></script>
+    <input type="button" value="connect to drive" id="connect-drive-btn" />
+    <p id="active-tree-text">current active tree:</p>
+    <input type="button" value="active tree" id="render-page-btn" />
+    <a href="treeManagement.html">
+      <input type="button" value="manage trees" />
+    </a>
+    <input type="button" value="download tree" id="download-btn" />
+
+    <script src="branch.js"></script>
   </body>
 </html>

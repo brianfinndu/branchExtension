@@ -1,26 +1,38 @@
-// TO-DO: implement a more robust and modular id checker
-
 import { TreeNode } from "./TreeNode.js";
+import { generateUUID, nilUUID } from "./uuid.js";
 
 export class Tree {
-  // nodes: an array of nodes, accessible by id
-  // nodeMap: an object of int-as-a-string:[int-as-a-string] forming the tree
-  // freedIds: ids released by node deletion
-  constructor(id, nodeMap, nodes) {
+  // id: UUID which must be unique among the user's trees
+  // nodeMap: UUID mapped to list of UUIDs
+  // nodes: UUID mapped to TreeNode objects
+  // name: user-facing name
+
+  // note that the root id will always be "00000000-0000-0000-0000-000000000000"
+
+  constructor(id, nodeMap, nodes, name = "Default Tree") {
     this.id = id;
-    this.freedIds = [];
+
     if (Object.keys(nodeMap).length === 0) {
-      this.nodeMap = { 0: [] };
+      this.nodeMap = { "00000000-0000-0000-0000-000000000000": [] };
     } else {
       this.nodeMap = nodeMap;
     }
+
     if (nodes.length === 0) {
-      this.nodes = [
-        new TreeNode(0, -1, "Root", new Date().toISOString(), "Root", ""),
-      ];
+      this.nodes = {
+        "00000000-0000-0000-0000-000000000000": new TreeNode(
+          nilUUID(),
+          "invalid",
+          "Root",
+          new Date().toISOString(),
+          "Root",
+          ""
+        ),
+      };
     } else {
       this.nodes = nodes;
     }
+    this.name = name;
   }
 
   // new parent, moving node
@@ -42,150 +54,135 @@ export class Tree {
   }
 
   getUniqueId() {
-    if (this.freedIds.length > 0) {
-      return this.freedIds.pop();
-    } else {
-      return this.nodes.length;
+    let uniqueCandidate = generateUUID();
+    while (uniqueCandidate in this.nodes) {
+      uniqueCandidate = generateUUID();
     }
+    return uniqueCandidate;
   }
 
   addNode(newNode) {
-    if (newNode.id < 0 || newNode.parentId < 0) {
-      console.log("Invalid node ID or parent ID");
-      return;
-    }
-
     this.nodes[newNode.id] = newNode;
-    this.nodeMap[newNode.id.toString()] = [];
-    this.nodeMap[newNode.parentId.toString()].push(newNode.id.toString());
+    this.nodeMap[newNode.id] = [];
+    this.nodeMap[newNode.parentId].push(newNode.id);
   }
 
   deleteNode(nodeId) {
-    if (
-      nodeId <= 0 ||
-      nodeId >= this.nodes.length ||
-      this.freedIds.includes(nodeId)
-    ) {
-      console.log("Invalid Id.");
+    if (nodeId === nilUUID()) {
+      console.log("Cannot delete root.");
       return;
     }
     let temp = this.nodes[nodeId];
-    this.nodes[nodeId] = new TreeNode(
-      -1,
-      -1,
-      "",
-      new Date().toISOString(),
-      "",
-      ""
-    );
-    this.freedIds.push(nodeId);
+    delete this.nodes[nodeId];
 
-    // remove node from its parent's nodeMap
-    const index = this.nodeMap[temp.parentId.toString()].indexOf(
-      nodeId.toString()
-    );
-    this.nodeMap[temp.parentId.toString()].splice(index, 1);
+    // remove node from its parent's children list
+    const index = this.nodeMap[temp.parentId].indexOf(nodeId);
+    this.nodeMap[temp.parentId].splice(index, 1);
 
     // add its children to the parent's nodeMap
-    for (const id of this.nodeMap[temp.id.toString()]) {
-      this.nodeMap[temp.parentId.toString()].push(id.toString());
+    // reassign its children's parentID
+    for (const childId of this.nodeMap[temp.id]) {
+      this.nodeMap[temp.parentId].push(childId);
+      this.nodes[childId].parentId = temp.parentId;
     }
 
     // delete its nodeMap entry
-    delete this.nodeMap[nodeId.toString()];
+    delete this.nodeMap[nodeId];
   }
 
   // delete your children, then delete yourself
   deleteTree(nodeId) {
-    if (
-      nodeId <= 0 ||
-      nodeId >= this.nodes.length ||
-      this.freedIds.includes(nodeId)
-    ) {
-      console.log("Invalid Id.");
+    if (nodeId === nilUUID()) {
+      console.log("Cannot delete root.");
       return;
     }
     let temp = this.nodes[nodeId];
-    const index = this.nodeMap[temp.parentId.toString()].indexOf(
-      nodeId.toString()
-    );
-    this.nodeMap[temp.parentId.toString()].splice(index, 1);
+    const index = this.nodeMap[temp.parentId].indexOf(nodeId);
+    this.nodeMap[temp.parentId].splice(index, 1);
 
     this.deleteTreeHelper(nodeId);
   }
 
   deleteTreeHelper(nodeId) {
-    for (const childId of this.nodeMap[nodeId.toString()]) {
+    for (const childId of this.nodeMap[nodeId]) {
       this.deleteTreeHelper(childId);
     }
 
-    this.nodes[nodeId] = new TreeNode(
-      -1,
-      -1,
-      "",
-      new Date().toISOString(),
-      "",
-      ""
-    );
-
-    this.freedIds.push(nodeId);
-
-    delete this.nodeMap[nodeId.toString()];
+    delete this.nodes[nodeId];
+    delete this.nodeMap[nodeId];
   }
 
   // TO-DO: move single node
 
-  // moveNode(nodeId, newParentId) {}
-
-  moveTree(rootId, newParentId) {
-    if (parseInt(rootId) <= 0 || parseInt(rootId) >= this.nodes.length) {
-      console.log("Invalid Id.");
+  moveNode(nodeId, newParentId) {
+    if (nodeId === nilUUID()) {
+      console.log("Cannot move root.");
       return;
     }
-    if (
-      parseInt(newParentId) < 0 ||
-      parseInt(newParentId) >= this.nodes.length
-    ) {
-      console.log("Invalid Parent Id.");
+
+    let temp = this.nodes[nodeId];
+
+    // remove node from its parent's children list
+    const index = this.nodeMap[temp.parentId].indexOf(nodeId);
+    this.nodeMap[temp.parentId].splice(index, 1);
+
+    // add its children to the parent's nodeMap
+    // reassign its children's parentID
+    for (const childId of this.nodeMap[temp.id]) {
+      this.nodeMap[temp.parentId].push(childId);
+      this.nodes[childId].parentId = temp.parentId;
+    }
+
+    // add the node to the desired parent's children list
+    this.nodeMap[newParentId].push(nodeId);
+
+    // change the node's internal parent ID value
+    this.nodes[nodeId].parentId = newParentId;
+
+    // empty the moved node's children list (they were left behind)
+    this.nodeMap[nodeId] = [];
+  }
+
+  moveTree(rootId, newParentId) {
+    if (rootId === nilUUID()) {
+      console.log("Cannot move root.");
       return;
     }
     if (rootId === newParentId) {
-      console.log("Target parent is the same as moving node");
+      console.log("Target parent is the same as moving node.");
       return;
     }
     if (this.isDescendant(newParentId, rootId)) {
-      console.log("Target parent is in moving node's subtree");
+      console.log("Target parent is in moving node's subtree.");
       return;
     }
 
     let temp = this.nodes[rootId];
     // remove node from its former parent's nodeMap
-    const index = this.nodeMap[temp.parentId.toString()].indexOf(
-      rootId.toString()
-    );
-
-    this.nodeMap[temp.parentId.toString()].splice(index, 1);
+    const index = this.nodeMap[temp.parentId].indexOf(rootId);
+    this.nodeMap[temp.parentId].splice(index, 1);
 
     // add node to its new parent's nodeMap
-    this.nodeMap[newParentId.toString()].push(rootId.toString());
+    this.nodeMap[newParentId].push(rootId);
 
     // change node's parentId
     temp.parentId = newParentId;
   }
 
   getNode(nodeId) {
-    if (nodeId <= 0 || nodeId >= this.nodes.length) {
-      console.log("Invalid Id.");
+    if (!(nodeId in this.nodes)) {
+      console.log("Node not found. Get node failed.");
       return null;
     }
+
     return this.nodes[nodeId];
   }
 
-  editNode(nodeId, newNode) {
-    if (nodeId <= 0 || nodeId >= this.nodes.length) {
-      console.log("Invalid Id.");
+  editNode(nodeId, field, newValue) {
+    if (!(nodeId in this.nodes)) {
+      console.log("Node not found. Edit failed.");
       return;
     }
-    this.nodes[nodeId] = newNode;
+    this.nodes[nodeId][field] = newValue;
   }
 }
