@@ -11,3 +11,40 @@
   pointer-events: none;
   transition: opacity 1s ease;
 }
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px 4px 8px;
+  width: max-content;
+}
+
+.node:hover {
+  background-color: lightgray;
+}
+
+.favicon {
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  margin-right: 6px;
+  object-fit: contain;
+}
+
+.unvisited a {
+  color: blue;
+}
+
+.note a {
+  color: green;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}

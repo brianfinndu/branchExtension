@@ -1,10 +1,14 @@
-// TO-DO: back button...
-
 import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
+import { generateUUID } from "./uuid.js";
 
-let activeTree = new Tree(0, {}, []);
-let rightClickedNodeId = -1;
+// TO-DO: load active tree if toggled
+// TO-DO: validate new UUID among user's trees if toggled
+let activeTree = new Tree(generateUUID(), {}, []);
+let subtreeRoot = "";
+let subtreeMap = {};
+let subtreeNodes = {};
+let rightClickedNodeId = "invalid";
 let rightClickedUrl = "";
 
 // Allow content scripts to access tab info
@@ -15,30 +19,42 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log("Permissions for content scripts modified.");
 });
 
+chrome.commands.onCommand.addListener((command) => {
+  if (command === "toggle-tree-overlay") {
+    console.log("Command triggered");
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.id) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "toggleOverlay" });
+      }
+    });
+  }
+});
+
 // When script starts, initialize an empty tree
 // TO-DO: change this to load tree from persistent storage
 chrome.runtime.onStartup.addListener(function () {
   console.log("Startup script launching.");
-  activeTree = new Tree(0, {}, []);
+  activeTree = new Tree(generateUUID(), {}, []);
 });
 
 // Keep script alive
-
 const keepAlive = () => setInterval(chrome.runtime.getPlatformInfo, 20e3);
 chrome.runtime.onStartup.addListener(keepAlive);
 keepAlive();
 
 // Handle forced script unload
-
 chrome.runtime.onSuspend.addListener(() => {
   console.log("Extension unloading.");
-  // save tree to persistent storage
+  // TO-DO: save tree to persistent storage
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // Handle messages from content scripts requesting node add
   if (message.action === "addNode") {
     let nodeData = message.nodeData;
+    if (!(nodeData.parentId in activeTree.nodes)) {
+      nodeData.parentId = "00000000-0000-0000-0000-000000000000";
+    }
     let contentType = "link";
     if (nodeData.hasOwnProperty("contentType")) {
       contentType = nodeData.contentType;
@@ -46,6 +62,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     let visited = true;
     if (nodeData.hasOwnProperty("visited")) {
       visited = nodeData.visited;
+    }
+    let expanded = true;
+    if (nodeData.hasOwnProperty("expanded")) {
+      expanded = nodeData.expanded;
     }
     let newNode = new TreeNode(
       nodeData.id,
@@ -55,7 +75,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       nodeData.title,
       nodeData.favicon,
       contentType,
-      visited
+      visited,
+      expanded
     );
     activeTree.addNode(newNode);
     if (contentType === "note") {
@@ -79,16 +100,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     return true;
   }
 
-  /*
-
-  // Handle messages from Branch requesting node deletion
-  if (message.action === "deleteNode") {
-    console.log("Node deletion requested");
-    activeTree.deleteNode(message.nodeId, message.parentId);
-    notifyTabsNodeDelete(message.nodeId, message.parentId);
-  }
-  */
-
   // Handle messages from Branch requesting tree movement
   if (message.action === "moveTree") {
     activeTree.moveTree(message.rootId, message.newParentId);
@@ -96,6 +107,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   // Handle message from Branch requesting single node movement
   if (message.action === "moveNode") {
+    activeTree.moveNode(message.nodeId, message.newParentId);
   }
 
   if (message.action === "setRightClickedNodeId") {
@@ -116,30 +128,55 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       });
     });
   }
+  if (message.action === "toggleExpanded") {
+    activeTree.nodes[message.nodeId].expanded =
+      !activeTree.nodes[message.nodeId].expanded;
+    chrome.runtime.sendMessage({ action: "renderNeeded" });
+  }
+
   if (message.action === "importTree") {
     let tree = message.treePOJO;
-    let rehydratedNodes = tree.nodes.map(
-      (obj) =>
-        new TreeNode(
-          obj.id,
-          obj.parentId,
-          obj.url,
-          obj.timestamp,
-          obj.title,
-          obj.favicon,
-          obj.visited,
-          obj.contentType
-        )
-    );
+
+    for (const key in tree.nodes) {
+      const currentNode = tree.nodes[key];
+      tree.nodes[key] = new TreeNode(
+        currentNode.id,
+        currentNode.parentId,
+        currentNode.url,
+        currentNode.timestamp,
+        currentNode.title,
+        currentNode.favicon,
+        currentNode.contentType,
+        currentNode.visited,
+        currentNode.expanded
+      );
+    }
+
     activeTree.id = tree.id;
     activeTree.nodeMap = tree.nodeMap;
-    activeTree.nodes = rehydratedNodes;
+    activeTree.nodes = tree.nodes;
     console.log("Import successful!");
+  }
+
+  if (message.action === "editNodeName") {
+    activeTree.editNode(rightClickedNodeId, "title", message.newName);
+    chrome.runtime.sendMessage({ action: "renderNeeded" });
   }
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   console.log("Context menu item clicked");
+  if (rightClickedNodeId === "invalid") {
+    console.log("Attempted to manipulate invalid node.");
+    return;
+  }
+
+  if (info.menuItemId === "renameNode") {
+    chrome.runtime.sendMessage({
+      action: "promptForNewName",
+      parentId: rightClickedNodeId,
+    });
+  }
   if (info.menuItemId === "deleteNode") {
     activeTree.deleteNode(rightClickedNodeId);
     chrome.runtime.sendMessage({ action: "renderNeeded" });
@@ -161,15 +198,108 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       rightClickedNodeId,
       rightClickedUrl,
       "",
-      "(unvisited) " + rightClickedUrl, // title...
+      rightClickedUrl, // title...
       "", // favicon...
       "link",
-      false
+      false,
+      true
     );
     activeTree.addNode(newNode);
   }
+  if (info.menuItemId === "copySubtree") {
+    subtreeRoot = rightClickedNodeId;
+    subtreeNodes = {};
+    subtreeMap = {};
+
+    let nodeQueue = [rightClickedNodeId];
+    while (nodeQueue.length > 0) {
+      let numQueueElements = nodeQueue.length;
+
+      for (let i = 0; i < numQueueElements; i++) {
+        // make a copy of the node from the id
+        let oldNode = activeTree.nodes[nodeQueue[i]];
+        let newNode = new TreeNode(
+          oldNode.id,
+          oldNode.parentId,
+          oldNode.url,
+          oldNode.timestamp,
+          oldNode.title,
+          oldNode.favicon,
+          oldNode.contentType,
+          oldNode.visited,
+          oldNode.expanded
+        );
+
+        // insert copy to temp nodes object
+        subtreeNodes[oldNode.id] = newNode;
+
+        // add parent-child mappings from active tree to temp
+        // add child ids to end of queue
+        subtreeMap[oldNode.id] = [];
+        for (const childId of activeTree.nodeMap[oldNode.id]) {
+          subtreeMap[oldNode.id].push(childId);
+          nodeQueue.push(childId);
+        }
+      }
+
+      // slice old nodes off of queue
+      nodeQueue = nodeQueue.slice(numQueueElements);
+    }
+
+    console.log(subtreeRoot);
+    console.log(subtreeMap);
+    console.log(subtreeNodes);
+  }
+  if (info.menuItemId === "pasteSubtree") {
+    if (
+      !subtreeRoot ||
+      Object.keys(subtreeNodes).length === 0 ||
+      Object.keys(subtreeMap).length === 0
+    ) {
+      return;
+    }
+    let oldToNew = {};
+    oldToNew[subtreeNodes[subtreeRoot].parentId] = rightClickedNodeId;
+    let nodeQueue = [subtreeRoot];
+    while (nodeQueue.length > 0) {
+      let numQueueElements = nodeQueue.length;
+
+      for (let i = 0; i < numQueueElements; i++) {
+        let newUUID = activeTree.getUniqueId();
+
+        // map old id to newly generated
+        oldToNew[nodeQueue[i]] = newUUID;
+
+        // clone old node with new UUID and new parent
+        let oldNode = subtreeNodes[nodeQueue[i]];
+        let newNode = new TreeNode(
+          newUUID,
+          oldToNew[oldNode.parentId],
+          oldNode.url,
+          oldNode.timestamp,
+          oldNode.title,
+          oldNode.favicon,
+          oldNode.contentType,
+          oldNode.visited,
+          oldNode.expanded
+        );
+
+        // add the cloned node to the tree
+        // this handles retroactively updating the parent's children mapping
+        activeTree.addNode(newNode);
+
+        for (const childId of subtreeMap[oldNode.id]) {
+          nodeQueue.push(childId);
+        }
+      }
+
+      nodeQueue = nodeQueue.slice(numQueueElements);
+      chrome.runtime.sendMessage({ action: "renderNeeded" });
+    }
+  }
 });
 
+/*
 function notifyTabsNodeDelete(deletedId, newId) {
   chrome.tabs.query({}, (tabs) => {
     for (let tab of tabs) {
@@ -181,3 +311,4 @@ function notifyTabsNodeDelete(deletedId, newId) {
     }
   });
 }
+*/

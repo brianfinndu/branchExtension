@@ -2,6 +2,14 @@ document.getElementById("render-page-btn").addEventListener("click", () => {
   chrome.tabs.create({ url: chrome.runtime.getURL("treeRender.html") });
 });
 
+document.getElementById("connect-drive-btn").addEventListener("click", () => {
+  chrome.identity.getAuthToken({ interactive: true }, function (token) {
+    if (chrome.runtime.lastError || !token) {
+      console.error("Auth failed.");
+    }
+  });
+});
+
 // TO-DO: move this into active tree page, and also allow access from tree management
 // TO-DO: rename with the id and/or name of the tree
 document.getElementById("download-btn").addEventListener("click", async () => {
