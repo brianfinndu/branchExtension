@@ -13,6 +13,7 @@ export class TreeNode {
     this.id = id;
     this.parentId = parentId;
     this.url = url;
+    // this is to set the timestamp to be in readable time not UTC
     this.timestamp = new Date(timestamp).toLocaleString("en-US", {
       timeZone: "America/Los_Angeles"});
     this.title = title;
