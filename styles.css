@@ -1,52 +1,98 @@
 @font-face {
-    font-family: 'BobbyJones';
-    src: url('fonts/Bobby Jones.otf') format('opentype'); 
-    font-weight: normal;
-    font-style: normal;
+  font-family: "BobbyJones";
+  src: url("fonts/Bobby Jones.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
 }
+/*General purpose*/
 body {
-    font-family: 'Fira Sans', sans-serif;
-    background-color: #ffffff;
-    margin: 0;
-    text-align: center;
-    padding: 20px;
+  font-family: "Fira Sans", sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  text-align: center;
+  padding: 20px;
 }
 .container {
-    max-width: 600px;
-    min-width: 250px;
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 10px;
+  max-width: 600px;
+  min-width: 250px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
 }
 .header {
-    font-family: 'BobbyJones', sans-serif; 
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    position: relative;
-    font-size: 40px;
-    font-weight: bold;
-    color: #2a543c;
+  font-family: "BobbyJones", sans-serif;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+  font-size: 40px;
+  font-weight: bold;
+  color: #2a543c;
 }
 .logo {
-    width: 45px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
 }
-
+.branch-divider {
+  margin-bottom: 15px;
+}
+.subtitle {
+  margin-left: auto;
+  font-size: 11px;
+  color: #666;
+  font-family: "Fira Sans", sans-serif;
+}
+.return-button {
+  background-color: #31312f;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 12px;
+  font-weight: bold;
+  transition: all 0.5s ease-in-out;
+}
+.return-button:hover {
+  color: #444;
+  background-color: #a6a5a5;
+}
 .dark-mode body {
-    background-color: #3e3c3c;
-    color: white;
+  background-color: #3e3c3c;
+  color: #f5f5f5;
+}
+.dark-mode .header {
+  color: #f5f5f5;
+}
+.dark-mode .logo {
+  filter: brightness(2);
 }
 
+/*For settings page*/
 .dark-mode .bar {
-    background: #333;
-    color: white;
+  background: #333;
+  color: #f5f5f5;
+}
+.dark-mode .bar-no-arrows {
+  background: #333;
+  color: #f5f5f5;
+}
+.dark-mode .arrow img {
+  filter: invert(1);
+}
+.dark-mode .return-button {
+  background-color: #f5f5f5;
+  color: #31312f;
+  transition: all 0.5s ease-in-out;
+}
+.dark-mode .return-button:hover {
+  background-color: #31312f;
+  color: #f5f5f5;
 }
 
-.dark-mode .arrow img {
-    filter: invert(1); 
-}
+/* For dashboard page */

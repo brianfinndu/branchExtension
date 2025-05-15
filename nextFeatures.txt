@@ -1,0 +1,49 @@
+```
+final features:
+
+x errors/bugs
+  x if page-id meta element not found on page, default to child of root
+  x root id will be nilUUID (00000000-0000-0000-0000-000000000000)
+
+x improve treenode class
+  x add collapsed/expanded field
+
+- improve tree class
+  x utilize uuid for tree id assignment
+  x utilize uuid for treenode id assignments
+  x add name field (need not be unique)
+  x implement "copy" function which puts a subtree somewhere in memory
+  x implement "paste" feature for copying/pasting a subtree from somewhere in memory
+  x implement single-node movement
+  x handle deletion of nodes that are still open
+    x soft handled by adding as child of root if parent id not found
+  - selectively prevent adding node (back, forward, reload, open from branch...)
+
+- user interface
+  - everything just kind of needs to be nice-ified
+  - color scheme stuff
+
+- active tree page
+  x add +/- icon to each node that has children (can be collapsed/expanded)
+  x add favicon to each node
+  x add visual distinctions for unvisited and note nodes
+  x implement click node to open link
+  x implement renaming nodes (changes 'title' field)
+  x implement single-node movement toggled with keyboard (hold shift for single node)
+  - replace node-level event listeners with doc-level page listeners
+  - implement page preview in hover dialog (may need screenshot on page load...)
+
+x active tree overlay
+  x yea honestly idk i haven't looked into this at all i don't even know if it's possible
+
+- tree management interface
+  - view all trees
+  - change currently active tree
+  - rename trees (name, not uid)
+  - delete a tree
+
+- settings
+  - toggle "last active tree" vs "make new tree" on startup
+  - use chrome.storage.sync for all settings
+  - if "last active tree", error catching if that tree has been deleted
+```

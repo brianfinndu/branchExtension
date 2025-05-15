@@ -8,15 +8,36 @@
     "storage",
     "webNavigation",
     "scripting",
-    "contextMenus"
+    "contextMenus",
+    "identity",
+    "activeTab"
   ],
-  "action": {
-    "default_popup": "branch.html",
-    "default_icon": "./images/branchLogo.png"
+  "oauth2": {
+    "client_id": "132228782829-c6vmuho5mq2kdculo63apih6vbumpev2.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/drive.file"]
   },
-
+  "action": {
+    "default_popup": "dashboard.html",
+    "default_icon": "images/branchLogo.png"
+  },
+  "commands": {
+    "toggle-tree-overlay": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Toggle the tree overlay"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["treeRender.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuqEpsxMwSofw8VGCuvrlbfAWFrzQg4jeAEvxPHNUZZG70bucdR6Xwm2OGFC37ZJGmFz43PytbTlaDvrSHuzFcLAv64irHVSZ9g2WnNLMw4H06s3nL2aNj0KvpY5WKZLm/NYlLzTKW8ba0rhOhBhMIHV3xp3wRDlo08bS7N+MJWklVrJ6rIWlUopqTEwWGmZPvpg8gBS0xEQnkRddZ2Li+belw/zR1UZPeS7DHN0DwwJlO99UfWD+CRXee9fRgEabjw8DDtw01/B1lJzcTf7VAGX38aCMSWyBVFmCBYQKPU9mt4wEygI4b89CcwrULdCxiuL0RSPK1iZ91/gvzd63dwIDAQAB",
   "icons": {
-    "16": "./images/branchLogo.png"
+    "16": "images/branchLogo.png"
   },
 
   "background": {
