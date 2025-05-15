@@ -1,33 +1,26 @@
-const cssVars = [
-  '--color-primary',
-  '--color-secondary',
-  '--color-tertiary',
-  '--color-dark-text',
-  '--color-light-text'
+const colorVars = [
+  "--color-primary",
+  "--color-secondary",
+  "--color-tertiary",
+  "--text-dark",
+  "--text-light"
 ];
 
-// Load and apply saved theme colors
-function applyStoredThemeColors() {
-  chrome.storage.sync.get(cssVars, (result) => {
-    cssVars.forEach((key) => {
-      if (result[key]) {
-        document.documentElement.style.setProperty(key, result[key]);
+function applySavedTheme() {
+  chrome.storage.sync.get(null, (data) => {
+    // Apply dark mode
+    if (data.darkMode) {
+      document.documentElement.classList.add("dark-mode");
+    }
+
+    // Apply custom colors if any
+    colorVars.forEach((cssVar, index) => {
+      const colorValue = data[`customColor${index}`];
+      if (colorValue) {
+        document.documentElement.style.setProperty(cssVar, colorValue);
       }
     });
   });
 }
 
-// Optional: Expose helper for setting a color manually
-function setThemeColor(variable, value) {
-  document.documentElement.style.setProperty(variable, value);
-  chrome.storage.sync.set({ [variable]: value });
-}
-
-// Automatically apply theme on page load
-document.addEventListener('DOMContentLoaded', applyStoredThemeColors);
-
-// Expose functions if needed elsewhere
-window.Theme = {
-  applyStoredThemeColors,
-  setThemeColor
-};
+applySavedTheme();

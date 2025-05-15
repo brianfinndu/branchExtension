@@ -27,7 +27,7 @@ body {
   position: relative;
   font-size: 40px;
   font-weight: bold;
-  color: #2a543c;
+  color: var(--color-primary, #2a543c);
 }
 .logo {
   width: 35px;
@@ -48,7 +48,7 @@ body {
   font-family: "Fira Sans", sans-serif;
 }
 .return-button {
-  background-color: #31312f;
+  background-color: var(--color-tertiary,#31312f);
   color: white;
   border: none;
   border-radius: 20px;
@@ -59,7 +59,7 @@ body {
   transition: all 0.5s ease-in-out;
 }
 .return-button:hover {
-  color: #444;
+  color: var(--color-dark-text, #30302f);
   background-color: #a6a5a5;
 }
 .dark-mode body {
@@ -78,11 +78,11 @@ body {
 
 /*For settings page*/
 .dark-mode .bar {
-  background: #333;
+  background: #30302f;
   color: #f5f5f5;
 }
 .dark-mode .bar-no-arrows {
-  background: #333;
+  background: #30302f;
   color: #f5f5f5;
 }
 .dark-mode .arrow img {
@@ -111,4 +111,7 @@ body {
   background: #f5f5f5;
   color: #31312f;
   transition: all 0.5s ease-in-out;
+}
+.dark-mode #current-branch-title{
+  color: #f5f5f5;
 }

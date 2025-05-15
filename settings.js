@@ -29,22 +29,24 @@ function changeText(index, direction) {
 
   // Theme toggle logic
   if (index === 1) {
-    const customColors = document.getElementById("customColors");
+// Show/hide color pickers
+customColors.style.display = newValue === 2 ? "block" : "none";
 
-    // Show/hide color pickers
-    customColors.style.display = newValue === 2 ? "block" : "none";
+// Toggle dark mode
+const isDarkMode = newValue === 1;
+document.documentElement.classList.toggle("dark-mode", isDarkMode);
 
-    // Toggle dark mode
-    const isDarkMode = newValue === 1;
-    document.documentElement.classList.toggle("dark-mode", isDarkMode);
-
-    chrome.storage.sync.set({ darkMode: isDarkMode });
-    chrome.runtime.sendMessage({
-      action: "toggleDarkMode",
-      enabled: isDarkMode,
-    });
+// Save selected mode
+chrome.storage.sync.set({
+  darkMode: isDarkMode,
+  colorMode: textOptions[1][newValue] // e.g. "light mode", "dark mode", "custom color mode"
+});
   }
 }
+
+
+
+applySavedTheme();
 
 document.getElementById("colorPickerSpan0").addEventListener("click", () => {
   openColorPicker(0);
@@ -83,12 +85,30 @@ document.getElementById("colorPicker4").addEventListener("change", () => {
   changeColor(4);
 });
 
-// Function to change colors
 function changeColor(index) {
   const picker = document.getElementById(`colorPicker${index}`);
-  document.querySelectorAll(".color-option")[index].style.backgroundColor =
-    picker.value;
+  const newColor = picker.value;
+
+  // Update preview box color
+  document.querySelectorAll(".color-option")[index].style.backgroundColor = newColor;
+
+  // Save to storage
+  chrome.storage.sync.set({ [`customColor${index}`]: newColor });
+
+  // Apply it immediately
+  document.documentElement.style.setProperty(getCSSVarName(index), newColor);
 }
+
+function getCSSVarName(index) {
+  return [
+    "--color-primary",
+    "--color-secondary",
+    "--color-tertiary",
+    "--text-dark",
+    "--text-light"
+  ][index];
+}
+
 
 /*
 // Function for custom colors
