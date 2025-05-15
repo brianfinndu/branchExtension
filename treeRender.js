@@ -161,10 +161,10 @@ function traverse(rootIndex, nodeMap, nodes) {
   ul.appendChild(li);
 
   if (!nodes[rootIndex].expanded) {
-    div.prepend(document.createTextNode(">"));
+    div.prepend(document.createTextNode("▷"));
     return ul;
   } else {
-    div.prepend(document.createTextNode("v"));
+    div.prepend(document.createTextNode("▽"));
   }
 
   if (nodeMap[rootIndex].length === 0) {

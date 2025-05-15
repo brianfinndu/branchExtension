@@ -72,6 +72,9 @@ body {
 .dark-mode .logo {
   filter: brightness(2);
 }
+.dark-mode .subtitle{
+  color: #f5f5f5;
+}
 
 /*For settings page*/
 .dark-mode .bar {
@@ -96,3 +99,16 @@ body {
 }
 
 /* For dashboard page */
+.dark-mode .current-branch{
+  background: #30302f;
+  color: #f5f5f5;
+}
+.dark-mode .tree-button{
+  background: #858585;
+  color: #f5f5f5;
+}
+.dark-mode .tree-button:hover{
+  background: #f5f5f5;
+  color: #31312f;
+  transition: all 0.5s ease-in-out;
+}
