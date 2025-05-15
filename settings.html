@@ -14,11 +14,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: #b3aba5;
+        background:  var(--color-secondary,#b3aba5);
         border-radius: 20px;
         padding: 10px;
         margin: 10px 0;
-        color: #343933;
+        color: var(--color-dark-text, #30302f);
         font-weight: bold;
       }
       .bar .text {
@@ -27,13 +27,13 @@
       }
       .bar-no-arrows {
         display: flex;
-        justify-content: center; /* Centers text directly */
+        justify-content: center; 
         align-items: center;
-        background: #b3aba5;
+        background: var(--color-secondary,#b3aba5);
         border-radius: 20px;
         padding: 10px;
         margin: 10px 0;
-        color: #343933;
+        color: var(--color-dark-text, #30302f);
         font-weight: bold;
       }
       .arrow img {
@@ -174,5 +174,7 @@
       </a>
     </div>
     <script src="settings.js"></script>
+    <script src="theme.js"></script>
+
   </body>
 </html>

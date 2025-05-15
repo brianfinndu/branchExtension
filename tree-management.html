@@ -25,7 +25,7 @@
         width: 500px;
         font-size: 40px;
         font-weight: bold;
-        color: #2a543c;
+        color: var(--color-primary, #2a543c);
       }
       .header-left {
         display: flex;
@@ -38,8 +38,8 @@
         margin-bottom: 10px;
       }
       .start-button {
-        background-color: #31312f;
-        color: white;
+        background-color: var(--color-tertiary,#31312f);
+        color: var(--color-light-text,#f5f5f5);
         border: none;
         border-radius: 10px;
         padding: 10px 20px;
@@ -49,7 +49,7 @@
         transition: all 0.5s ease-in-out;
       }
       .start-button:hover {
-        background-color: #a6a5a5;
+        background-color: 
         color: #444;
       }
       .card {
@@ -60,9 +60,9 @@
         margin-top: 12px;
         margin-bottom: 12px;
         padding: 16px;
-        background: #f0f0f0;
+        background: var(--color-light-text,#f5f5f5);
         border-radius: 8px;
-        flex-wrap: wrap;
+        flex-wrap: wrap;var(--color-secondary, #b3aba5);
         min-width: 200px;
       }
       .text-content {
@@ -90,14 +90,14 @@
         font-size: 14px;
         border: none;
         border-radius: 6px;
-        background-color: #31312f;
-        color: white;
+        background-color: var(--color-tertiary,#31312f);
+        color: var(--color-light-text,#f5f5f5);
         font-family: "Fira Sans", sans-serif;
         cursor: pointer;
         transition: background-color 0.5s ease-in-out;
       }
       .button-grid button:hover {
-        background-color: #707070;
+        background-color: var(--color-secondary, #b3aba5);
       }
       button:disabled {
         background-color: #999;

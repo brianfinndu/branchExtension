@@ -13,7 +13,6 @@
   pointer-events: none;
   transition: opacity 1s ease;
 }
-
 .top-right-icons {
   position: absolute;
   top: 10px;
@@ -21,7 +20,6 @@
   display: flex;
   gap: 15px;
 }
-
 .save-button-container {
   width: 100%;
   display: flex;
@@ -43,27 +41,23 @@
   background-color: #a6a5a5;
   color: #444;
 }
-
 #tree-content:first-child {
   padding: 0;
 }
-
 ul {
   list-style: none;
   padding-left: 0;
 }
-
 .node {
   display: flex;
   align-items: center;
   padding: 4px 8px 4px 8px;
   width: max-content;
+  content:"▽";
 }
-
 .node:hover {
   background-color: lightgray;
 }
-
 .favicon {
   width: 16px;
   height: 16px;
@@ -71,16 +65,13 @@ ul {
   margin-right: 6px;
   object-fit: contain;
 }
-
 .unvisited a {
-  color: blue;
+  color: #333;
 }
-
 .note a {
-  color: green;
+  color: #78A392;
 }
-
 a {
   text-decoration: none;
-  color: black;
+  color: #333;
 }
