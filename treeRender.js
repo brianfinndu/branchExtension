@@ -324,7 +324,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       id: nodeId,
       parentId: message.parentId,
       url: "",
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" }),
       title: noteText,
       favicon: "./images/branchLogo.png",
       contentType: "note",
