@@ -13,7 +13,8 @@ export class TreeNode {
     this.id = id;
     this.parentId = parentId;
     this.url = url;
-    this.timestamp = timestamp;
+    this.timestamp = new Date(timestamp).toLocaleString("en-US", {
+      timeZone: "America/Los_Angeles"});
     this.title = title;
     this.favicon = favicon;
     this.contentType = contentType;
