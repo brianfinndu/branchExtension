@@ -99,6 +99,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     sendResponse({ activeTree: activeTree });
     return true;
   }
+  // Handle messages from Branch requesting renaming tree
+  if (message.action === "editTreeName") {
+    if (activeTree.id === message.treeId) {
+      activeTree.name = message.newName;
+      chrome.storage.local.set({ activeTree });
+      chrome.runtime.sendMessage({ action: "renderNeeded" });
+    }
+    return;
+  }
 
   // Handle messages from Branch requesting tree movement
   if (message.action === "moveTree") {
