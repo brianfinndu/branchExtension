@@ -66,10 +66,10 @@ ul {
   object-fit: contain;
 }
 .unvisited a {
-  color:#78A392;
+  color: #333;
 }
 .note a {
-  color: #666;
+  color: #78A392;
 }
 a {
   text-decoration: none;
