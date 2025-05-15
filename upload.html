@@ -17,8 +17,8 @@
       .upload-container {
         max-width: 600px;
         min-width: 250px;
-        background: #1f4b34;
-        color: white;
+        background: var(--primar-color,#1f4b34);
+        color: var(--color-light-text,#f5f5f5);
         padding: 20px;
         border-radius: 10px;
         margin: 10px auto;
@@ -44,8 +44,8 @@
         transition: all 1s ease-in-out;
       }
       .upload-box:hover {
-        color: #655e56;
-        filter: brightness(1);
+        color: var(--color-tertiary, #30302f);
+        filter: brightness(3);
       }
       .error-message {
         color: #ffaaaa;
@@ -87,5 +87,6 @@
     </a>
 
     <script src="upload.js"></script>
+    <script src="theme.js"></script>
   </body>
 </html>

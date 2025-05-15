@@ -25,7 +25,7 @@
         gap: 15px;
       }
       .top-right-icons a {
-        color: #857f79;
+        color: var(--color-secondary,#b3aba5);
         text-decoration: none;
         font-size: 18px;
         transition: color 0.5s ease-in-out;
@@ -40,8 +40,8 @@
         margin-bottom: 10px;
       }
       .drive-button {
-        background-color: #31312f;
-        color: white;
+        background-color: var(--color-tertiary,#31312f);
+        color: var(--color-light-text,#f5f5f5);
         border: none;
         border-radius: 10px;
         padding: 10px 20px;
@@ -55,7 +55,7 @@
         color: #444;
       }
       .current-branch {
-        background-color: #8b8b8b;
+        background-color: var(--color-secondary, #b3aba5);
         color: #31312f;
         border-radius: 10px;
         padding: 20px;
@@ -78,21 +78,22 @@
         font-size: 14px;
         border: none;
         border-radius: 6px;
-        background-color: #ababa9;
-        color: #313131;
+        background-color: var(--color-tertiary,#31312f);
+        color: var(--color-light-text,#f5f5f5);
         font-family: "Fira Sans", sans-serif;
         transition: all 0.5s ease-in-out;
       }
       .tree-button:hover {
-        background-color: #31312f;
-        color: #f5f5f5;
+        background-color: var(--color-primary, #2a543b);
+        color: var(--color-dark-text, #30302f)
       }
       #current-branch-title {
         font-size: 16px;
+        color: var(--color-dark-text, #30302f)
       }
       #current-branch-name {
         font-size: 16px;
-        color: #2a543b;
+        color: var(--color-primary, #2a543b);
       }
     </style>
   </head>
@@ -132,5 +133,6 @@
       </div>
     </div>
     <script src="dashboard.js"></script>
+    <script src="theme.js"></script>
   </body>
 </html>
