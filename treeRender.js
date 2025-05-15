@@ -288,14 +288,17 @@ async function renderTree() {
   try {
     const response = await chrome.runtime.sendMessage({ action: "getTree" });
     console.log(response);
-    document.body.innerHTML = "";
-    document.body.appendChild(
+    const treeContent = document.getElementById("tree-content");
+    treeContent.innerHTML = "";
+    treeContent.appendChild(
       traverse(
         "00000000-0000-0000-0000-000000000000",
         response.activeTree.nodeMap,
         response.activeTree.nodes
       )
     );
+    document.getElementById("tree-content").firstChild.style.paddingLeft =
+      "0px";
     const links = document.querySelectorAll("a");
     links.forEach((link) => {
       link.setAttribute("target", "_blank");

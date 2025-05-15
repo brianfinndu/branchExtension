@@ -1,6 +1,8 @@
 #hover-popup {
   display: none;
   position: fixed;
+  max-width: 400px;
+  overflow-wrap: anywhere;
   z-index: 1000;
   background: #fff;
   border: 1px solid #ccc;
@@ -10,6 +12,40 @@
   font-size: 0.85em;
   pointer-events: none;
   transition: opacity 1s ease;
+}
+
+.top-right-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 15px;
+}
+
+.save-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+.save-button {
+  background-color: #31312f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: "Fira Sans", sans-serif;
+  transition: all 0.5s ease-in-out;
+}
+.save-button:hover {
+  background-color: #a6a5a5;
+  color: #444;
+}
+
+#tree-content:first-child {
+  padding: 0;
 }
 
 ul {

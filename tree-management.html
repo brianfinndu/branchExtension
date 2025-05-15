@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tree Management</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="common.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
       rel="stylesheet"
@@ -15,21 +14,22 @@
       rel="stylesheet"
     />
     <style>
+      body {
+        max-height: 200px;
+      }
       .header {
         font-family: "BobbyJones", sans-serif;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 100%;
+        width: 500px;
         font-size: 40px;
         font-weight: bold;
         color: #2a543c;
-        margin-bottom: 20px;
       }
       .header-left {
         display: flex;
         align-items: center;
-        gap: 10px;
       }
       .start-button-container {
         width: 100%;
@@ -46,11 +46,11 @@
         cursor: pointer;
         font-weight: bold;
         font-family: "Fira Sans", sans-serif;
+        transition: all 0.5s ease-in-out;
       }
       .start-button:hover {
         background-color: #a6a5a5;
         color: #444;
-        transition: background-color 0.3s ease;
       }
       .card {
         border-radius: 10px;
@@ -85,6 +85,7 @@
         margin-left: 20px;
       }
       .button-grid button {
+        width: 90px;
         padding: 10px 14px;
         font-size: 14px;
         border: none;
@@ -93,9 +94,10 @@
         color: white;
         font-family: "Fira Sans", sans-serif;
         cursor: pointer;
+        transition: background-color 0.5s ease-in-out;
       }
       .button-grid button:hover {
-        background-color: #444;
+        background-color: #707070;
       }
       button:disabled {
         background-color: #999;
@@ -109,17 +111,16 @@
         <div class="header-left">
           <span>BRANCH</span>
           <div class="logo">
-            <img src="images/branchLogo.png" alt="Extension Logo" width="30" />
+            <img src="images/branchLogo.png" alt="Extension Logo" width="40" />
           </div>
         </div>
         <a href="dashboard.html" title="Dashboard">
           <button class="return-button">return to dashboard</button>
         </a>
       </div>
+      <hr class="branch-divider" />
       <div class="start-button-container">
-        <button class="start-button" onclick="startNewTree()">
-          start new tree
-        </button>
+        <button class="start-button">start new tree</button>
       </div>
 
       <!-- Example Tree Card -->
@@ -129,23 +130,10 @@
           <div class="timestamp">Last change: 5/4/25</div>
         </div>
         <div class="button-grid">
-          <button onclick="renameTree(this)">rename</button>
-          <button onclick="deleteTree(this)">delete</button>
-          <button onclick="setActiveTree(this)">set active</button>
-          <button onclick="exportTree(this)">export</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="text-content">
-          <div class="title">TREE NAME</div>
-          <div class="timestamp">Last change: 5/4/25</div>
-        </div>
-        <div class="button-grid">
-          <button onclick="renameTree(this)">rename</button>
-          <button onclick="deleteTree(this)">delete</button>
-          <button onclick="setActiveTree(this)">set active</button>
-          <button onclick="exportTree(this)">export</button>
+          <button>rename</button>
+          <button>delete</button>
+          <button>set active</button>
+          <button>export</button>
         </div>
       </div>
     </div>

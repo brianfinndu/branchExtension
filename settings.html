@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Settings</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="common.js"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap"
       rel="stylesheet"
@@ -60,10 +59,10 @@
         grid-template-columns: auto auto;
         align-items: center;
         column-gap: 5px;
-        margin: 5px 0;
+        width: 80%;
+        margin: 5px auto;
       }
       .color-description {
-        margin-left: 50px;
         min-width: 160px;
         text-align: left;
         font-size: 15px;
@@ -73,13 +72,15 @@
         height: 20px;
         border-radius: 50%;
         justify-self: end;
-        margin-right: 50px;
         cursor: pointer;
         border: 2px solid #ffffff;
         box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
       }
       .color-picker {
         display: none;
+      }
+      #shortcut-key {
+        margin-left: 5px;
       }
     </style>
   </head>
@@ -88,35 +89,35 @@
       <div class="header">
         <span>BRANCH</span>
         <div class="logo">
-          <img src="images/branchLogo.png" alt="Extension Logo" width="30" />
+          <img src="images/branchLogo.png" alt="Extension Logo" width="40" />
         </div>
         <span class="subtitle">settings</span>
       </div>
+      <hr class="branch-divider" />
       <!-- Bars with arrows -->
       <div class="bar">
-        <span class="arrow" onclick="changeText(0, -1)">
+        <span class="arrow" id="startup-left">
           <img src="images/left-arrow.png" alt="Left Arrow" />
         </span>
-        <span class="text" id="text0">new tree on startup</span>
-        <span class="arrow" onclick="changeText(0, 1)">
+        <span class="text" id="startup-text">new tree on startup</span>
+        <span class="arrow" id="startup-right">
           <img src="images/right-arrow.png" alt="Right Arrow" />
         </span>
       </div>
-      <script src="settings.js"></script>
       <div class="bar">
-        <span class="arrow" onclick="changeText(1, -1)">
+        <span class="arrow" id="color-mode-left">
           <img src="images/left-arrow.png" alt="Left Arrow" />
         </span>
-        <span class="text" id="text1">light mode</span>
-        <span class="arrow" onclick="changeText(1, 1)">
+        <span class="text" id="color-mode-text">light mode</span>
+        <span class="arrow" id="color-mode-right">
           <img src="images/right-arrow.png" alt="Right Arrow" />
         </span>
       </div>
 
       <div class="bar-no-arrows">
-        overlay shortcut: ctrl + cmd +
+        overlay: ctrl/cmd + shift +
         <span id="shortcut-key" contenteditable="true" class="key-input">
-          a</span
+          s</span
         >
       </div>
 
@@ -126,70 +127,45 @@
           <span
             class="color-option"
             style="background: #2e7d32"
-            onclick="openColorPicker(0)"
+            id="colorPickerSpan0"
           ></span>
-          <input
-            type="color"
-            class="color-picker"
-            id="colorPicker0"
-            onchange="changeColor(0)"
-          />
+          <input type="color" class="color-picker" id="colorPicker0" />
         </div>
         <div class="color-picker-item">
           <span class="color-description">secondary accent color:</span>
           <span
             class="color-option"
             style="background: #bdbdbd"
-            onclick="openColorPicker(1)"
+            id="colorPickerSpan1"
           ></span>
-          <input
-            type="color"
-            class="color-picker"
-            id="colorPicker1"
-            onchange="changeColor(1)"
-          />
+          <input type="color" class="color-picker" id="colorPicker1" />
         </div>
         <div class="color-picker-item">
           <span class="color-description">tertiary accent color:</span>
           <span
             class="color-option"
             style="background: #9e9e9e"
-            onclick="openColorPicker(2)"
+            id="colorPickerSpan2"
           ></span>
-          <input
-            type="color"
-            class="color-picker"
-            id="colorPicker2"
-            onchange="changeColor(2)"
-          />
+          <input type="color" class="color-picker" id="colorPicker2" />
         </div>
         <div class="color-picker-item">
           <span class="color-description">dark text color:</span>
           <span
             class="color-option"
             style="background: #000"
-            onclick="openColorPicker(3)"
+            id="colorPickerSpan3"
           ></span>
-          <input
-            type="color"
-            class="color-picker"
-            id="colorPicker3"
-            onchange="changeColor(3)"
-          />
+          <input type="color" class="color-picker" id="colorPicker3" />
         </div>
         <div class="color-picker-item">
           <span class="color-description">light text color:</span>
           <span
             class="color-option"
             style="background: #fff"
-            onclick="openColorPicker(4)"
+            id="colorPickerSpan4"
           ></span>
-          <input
-            type="color"
-            class="color-picker"
-            id="colorPicker4"
-            onchange="changeColor(4)"
-          />
+          <input type="color" class="color-picker" id="colorPicker4" />
         </div>
       </div>
 
@@ -197,35 +173,6 @@
         <button class="return-button">return to dashboard</button>
       </a>
     </div>
-
-    <script>
-      // Function for color picker
-      function openColorPicker(index) {
-        document.getElementById(`colorPicker${index}`).click();
-      }
-      // Function to change colors
-      function changeColor(index) {
-        const picker = document.getElementById(`colorPicker${index}`);
-        document.querySelectorAll(".color-option")[
-          index
-        ].style.backgroundColor = picker.value;
-      }
-      // Function for custom colors
-      window.addEventListener("DOMContentLoaded", () => {
-        const currentMode = document.getElementById("text1").textContent;
-        document.getElementById("customColors").style.display =
-          currentMode === "custom" ? "block" : "none";
-      });
-      // Function to change key of shortcut (just the text)
-      const keyInput = document.getElementById("shortcut-key");
-      keyInput.addEventListener("input", (e) => {
-        let text = keyInput.textContent.trim().toUpperCase();
-        // Only allow single character
-        if (text.length > 1) {
-          text = text.charAt(0);
-        }
-        keyInput.textContent = text;
-      });
-    </script>
+    <script src="settings.js"></script>
   </body>
 </html>

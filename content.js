@@ -136,7 +136,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     iframe.style.height = "100vh";
     iframe.style.zIndex = "999999";
     iframe.style.border = "none";
-    iframe.style.backgroundColor = "rgba(255, 255, 255, 0.75)";
+    iframe.style.backgroundColor = "rgba(255, 255, 255, 0.25)";
+    iframe.style.opacity = 0.9;
 
     document.body.appendChild(iframe);
   }

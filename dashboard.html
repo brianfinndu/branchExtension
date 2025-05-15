@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="common.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
       rel="stylesheet"
@@ -15,6 +14,9 @@
       rel="stylesheet"
     />
     <style>
+      body {
+        width: 350px;
+      }
       .top-right-icons {
         position: absolute;
         top: 10px;
@@ -26,6 +28,7 @@
         color: #857f79;
         text-decoration: none;
         font-size: 18px;
+        transition: color 0.5s ease-in-out;
       }
       .top-right-icons a:hover {
         color: #c6c7c8;
@@ -34,16 +37,20 @@
         background-color: #8b8b8b;
         color: #31312f;
         border-radius: 10px;
-        padding: 10px 20px;
+        padding: 20px;
         font-weight: bold;
         font-family: "Fira Sans", sans-serif;
         padding-top: 20px;
+        text-align: left;
       }
       .tree-button-container {
         display: flex;
         justify-content: center;
         margin-top: 10px;
         gap: 10px;
+      }
+      .tree-button-a {
+        flex: 1 1 0;
       }
       .tree-button {
         padding: 10px 14px;
@@ -52,13 +59,19 @@
         border-radius: 6px;
         background-color: #ababa9;
         color: #313131;
-        margin-left: 10px;
         font-family: "Fira Sans", sans-serif;
+        transition: all 0.5s ease-in-out;
       }
       .tree-button:hover {
         background-color: #31312f;
         color: #f5f5f5;
-        transition: background-color 0.3s ease;
+      }
+      #current-branch-title {
+        font-size: 16px;
+      }
+      #current-branch-name {
+        font-size: 16px;
+        color: #2a543b;
       }
     </style>
   </head>
@@ -67,7 +80,7 @@
       <div class="header">
         <span>BRANCH</span>
         <div class="logo">
-          <img src="images/branchLogo.png" alt="Extension Logo" width="30" />
+          <img src="images/branchLogo.png" alt="Extension Logo" width="40" />
         </div>
         <div class="top-right-icons">
           <a href="settings.html" title="Settings">
@@ -77,17 +90,23 @@
             <i class="fas fa-upload"></i>
           </a>
         </div>
-        <hr class="branch-divider" />
       </div>
+      <hr class="branch-divider" />
       <div class="current-branch">
         <span id="current-branch-title">active tree: </span>
-        <span id="current-branch-name">main</span>
-        <div class="tree-button-container"></div>
-        <button class="tree-button" onclick="viewActiveTree()">
-          view active tree
-        </button>
-        <button class="tree-button" onclick="manageTree()">manage tree</button>
+        <span id="current-branch-name">default tree</span>
+        <div class="tree-button-container">
+          <a class="tree-button-a" href="treeRender.html">
+            <button id="nav-active" class="tree-button">
+              view active tree
+            </button>
+          </a>
+          <a class="tree-button-a" href="tree-management.html">
+            <button class="tree-button">manage trees</button>
+          </a>
+        </div>
       </div>
     </div>
+    <script src="dashboard.js"></script>
   </body>
 </html>

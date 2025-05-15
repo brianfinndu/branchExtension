@@ -17,7 +17,7 @@
     "scopes": ["https://www.googleapis.com/auth/drive.file"]
   },
   "action": {
-    "default_popup": "branch.html",
+    "default_popup": "dashboard.html",
     "default_icon": "images/branchLogo.png"
   },
   "commands": {

@@ -3,10 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tree Rendering</title>
+    <title>Active Tree</title>
     <link rel="stylesheet" href="treeRenderStyles.css" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <div class="header">
+      <span>BRANCH</span>
+      <div class="logo">
+        <img src="images/branchLogo.png" alt="Extension Logo" width="40" />
+      </div>
+      <div class="top-right-icons">
+        <div class="save-button-container">
+          <button class="save-button">save tree to drive</button>
+        </div>
+      </div>
+    </div>
+    <hr class="branch-divider" />
+    <div id="tree-content"></div>
     <script src="treeRender.js"></script>
   </body>
 </html>
