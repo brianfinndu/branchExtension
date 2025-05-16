@@ -287,6 +287,8 @@ document.addEventListener("visibilitychange", () => {
 async function renderTree() {
   try {
     const response = await chrome.runtime.sendMessage({ action: "getTree" });
+    document.getElementById("current-branch-name").innerText =
+      response.activeTree.name;
     console.log(response);
     const treeContent = document.getElementById("tree-content");
     treeContent.innerHTML = "";
@@ -335,7 +337,32 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
 
   if (message.action === "promptForNewName") {
-    let newName = prompt("Enter new node name: ");
+    let newName = prompt("Enter new node name.");
     chrome.runtime.sendMessage({ action: "editNodeName", newName: newName });
   }
+});
+
+document.getElementById("export-btn").addEventListener("click", async () => {
+  chrome.runtime.sendMessage({ action: "getTree" }, (response) => {
+    const tree = response.activeTree;
+    const jsonString = JSON.stringify(tree, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = tree.name + ".json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  });
+});
+
+document.getElementById("rename-btn").addEventListener("click", () => {
+  let newName = prompt("Enter new tree name.");
+  chrome.runtime.sendMessage({ action: "renameCurrentTree", newName: newName });
+});
+
+document.getElementById("save-btn").addEventListener("click", () => {
+  chrome.runtime.sendMessage({ action: "writeCurrentToDrive" });
 });

@@ -1,15 +1,16 @@
 import { Tree } from "./Tree.js";
 import { TreeNode } from "./TreeNode.js";
-import { generateUUID } from "./uuid.js";
+import { generateUUID, nilUUID } from "./uuid.js";
 
 // TO-DO: load active tree if toggled
 // TO-DO: validate new UUID among user's trees if toggled
-let activeTree = new Tree(generateUUID(), {}, []);
+let activeTree = new Tree(nilUUID(), {}, []);
 let subtreeRoot = "";
 let subtreeMap = {};
 let subtreeNodes = {};
 let rightClickedNodeId = "invalid";
 let rightClickedUrl = "";
+let currentTreeId = nilUUID();
 
 // Allow content scripts to access tab info
 chrome.runtime.onInstalled.addListener(() => {
@@ -48,6 +49,7 @@ chrome.runtime.onSuspend.addListener(() => {
   // TO-DO: save tree to persistent storage
 });
 
+// Messaging handlers
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // Handle messages from content scripts requesting node add
   if (message.action === "addNode") {
@@ -171,8 +173,40 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     activeTree.editNode(rightClickedNodeId, "title", message.newName);
     chrome.runtime.sendMessage({ action: "renderNeeded" });
   }
+
+  if (message.action === "renameCurrentTree") {
+    activeTree.name = message.newName;
+    chrome.runtime.sendMessage({ action: "renderNeeded" });
+  }
+
+  if (message.action === "writeCurrentToDrive") {
+    try {
+      chrome.identity.getAuthToken({ interactive: false }, async (token) => {
+        if (chrome.runtime.lastError || !token) {
+          console.alert("Auth failed. " + chrome.runtime.lastError.message);
+        } else {
+          await fetch(
+            `https://www.googleapis.com/drive/v3/files/${currentTreeId}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const folderId = await getOrCreateBranchFolder();
+          console.log("Folder ID: " + folderId);
+          await uploadTreeToDrive(token, folderId);
+          console.log("Tree uploaded to Drive.");
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 });
 
+// Context menu handlers
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   console.log("Context menu item clicked");
   if (rightClickedNodeId === "invalid") {
@@ -308,16 +342,91 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
-/*
-function notifyTabsNodeDelete(deletedId, newId) {
-  chrome.tabs.query({}, (tabs) => {
-    for (let tab of tabs) {
-      chrome.tabs.sendMessage(tab.id, {
-        action: "nodeDeleted",
-        deletedId: deletedId,
-        newId: newId,
-      });
+async function getOrCreateBranchFolder(token) {
+  const query = encodeURIComponent(
+    "name = 'branch-tree-jsons' and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
+  );
+
+  const response = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name)`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }
-  });
+  );
+
+  const data = await response.json();
+
+  if (data.files && data.files.length > 0) {
+    // Folder found
+    console.log("Folder detected.");
+    return data.files[0].id;
+  }
+
+  return await createBranchFolder(token);
 }
-*/
+
+async function createBranchFolder(token) {
+  const metadata = {
+    name: "branch-tree-jsons",
+    mimeType: "application/vnd.google-apps.folder",
+  };
+
+  const response = await fetch("https://www.googleapis.com/drive/v3/files", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(metadata),
+  });
+
+  const data = await response.json();
+  console.log("Folder created.");
+  return data.id;
+}
+
+async function uploadTreeToDrive(token, folderId) {
+  const treeData = JSON.stringify(activeTree);
+
+  const metadata = {
+    name: activeTree.name + ".json",
+    mimeType: "application/json",
+    parents: [folderId],
+  };
+
+  const boundary = "-------314159265358979323846";
+  const delimiter = `\r\n--${boundary}\r\n`;
+  const closeDelim = `\r\n--${boundary}--`;
+
+  const body =
+    delimiter +
+    "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
+    JSON.stringify(metadata) +
+    delimiter +
+    "Content-Type: application/json\r\n\r\n" +
+    treeData +
+    closeDelim;
+
+  const uploadRes = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": `multipart/related; boundary=${boundary}`,
+      },
+      body,
+    }
+  );
+
+  if (!uploadRes.ok) {
+    console.log("Write to Drive failed.");
+  }
+
+  const responseJson = await uploadRes.json();
+  console.log(responseJson);
+  currentTreeId = responseJson.id;
+  return responseJson;
+}

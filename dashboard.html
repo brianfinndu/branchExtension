@@ -26,7 +26,7 @@
         gap: 15px;
       }
       .top-right-icons a {
-        color: var(--color-secondary,#b3aba5);
+        color: var(--color-secondary, #b3aba5);
         text-decoration: none;
         font-size: 18px;
         transition: color 0.5s ease-in-out;
@@ -34,26 +34,10 @@
       .top-right-icons a:hover {
         color: #c6c7c8;
       }
-      .drive-button-container {
-        width: 100%;
+      #drive-connection-container {
         display: flex;
         justify-content: flex-start;
         margin-bottom: 10px;
-      }
-      .drive-button {
-        background-color: var(--color-tertiary,#31312f);
-        color: var(--color-light-text,#f5f5f5);
-        border: none;
-        border-radius: 10px;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-weight: bold;
-        font-family: "Fira Sans", sans-serif;
-        transition: all 0.5s ease-in-out;
-      }
-      .drive-button:hover {
-        background-color: #a6a5a5;
-        color: #444;
       }
       .current-branch {
         background-color: var(--color-secondary, #b3aba5);
@@ -79,18 +63,27 @@
         font-size: 14px;
         border: none;
         border-radius: 6px;
-        background-color: var(--color-tertiary,#31312f);
-        color: var(--color-light-text,#f5f5f5);
+        background-color: var(--color-tertiary, #31312f);
+        color: var(--color-light-text, #f5f5f5);
         font-family: "Fira Sans", sans-serif;
         transition: all 0.5s ease-in-out;
       }
       .tree-button:hover {
-        background-color: var(--color-primary, #2a543b);
-        color: var(--color-dark-text, #30302f)
+        background-color: #31312f;
+        color: #f5f5f5;
+      }
+      .tree-button-disabled {
+        background-color: #2a543b;
+        color: #f5f5f5;
+        font-family: "Fira Sans", sans-serif;
+        font-size: 14px;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 14px;
       }
       #current-branch-title {
         font-size: 16px;
-        color: var(--color-dark-text, #30302f)
+        color: var(--color-dark-text, #30302f);
       }
       #current-branch-name {
         font-size: 16px;
@@ -115,9 +108,11 @@
         </div>
       </div>
       <hr class="branch-divider" />
-            <div class="drive-button-container">
-              <button id="connect-drive-btn" class="drive-button">connect to drive</button>
-              <script src="dashboard.js"></script></div>
+      <div id="drive-connection-container">
+        <button id="drive-connection-btn" class="tree-button">
+          connect to drive
+        </button>
+      </div>
       <div class="current-branch">
         <span id="current-branch-title">active tree: </span>
         <span id="current-branch-name">default tree</span>

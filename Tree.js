@@ -9,7 +9,7 @@ export class Tree {
 
   // note that the root id will always be "00000000-0000-0000-0000-000000000000"
 
-  constructor(id, nodeMap, nodes, name = "Default Tree") {
+  constructor(id, nodeMap, nodes, name = "default tree") {
     this.id = id;
 
     if (Object.keys(nodeMap).length === 0) {

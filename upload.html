@@ -15,6 +15,9 @@
       rel="stylesheet"
     />
     <style>
+      body {
+        width: 350px;
+      }
       .upload-container {
         max-width: 600px;
         min-width: 250px;
@@ -61,32 +64,34 @@
     </style>
   </head>
   <body>
-    <div class="header">
-      <span>BRANCH</span>
-      <div class="logo">
-        <img src="images/branchLogo.png" alt="Extension Logo" width="40" />
+    <div class="container">
+      <div class="header">
+        <span>BRANCH</span>
+        <div class="logo">
+          <img src="images/branchLogo.png" alt="Extension Logo" width="40" />
+        </div>
+        <span class="subtitle">import</span>
       </div>
-      <span class="subtitle">import</span>
-    </div>
-    <hr class="branch-divider" />
-    <div class="upload-container">
-      <div id="upload-region" class="upload-box">
-        <img src="images/import.png" id="import-img" />
-        <p>drag a file here, or click to browse files</p>
-        <input
-          type="file"
-          id="file-input"
-          accept=".json"
-          style="display: none"
-        />
+      <hr class="branch-divider" />
+      <div class="upload-container">
+        <div id="upload-region" class="upload-box">
+          <img src="images/import.png" id="import-img" />
+          <p>drag a file here, or click to browse files</p>
+          <input
+            type="file"
+            id="file-input"
+            accept=".json"
+            style="display: none"
+          />
+        </div>
+        <div id="error-message" class="error-message"></div>
       </div>
-      <div id="error-message" class="error-message"></div>
+
+      <a href="dashboard.html" title="Dashboard">
+        <button class="return-button">return to dashboard</button>
+      </a>
+
+      <script src="upload.js"></script>
     </div>
-
-    <a href="dashboard.html" title="Dashboard">
-      <button class="return-button">return to dashboard</button>
-    </a>
-
-    <script src="upload.js"></script>
   </body>
 </html>

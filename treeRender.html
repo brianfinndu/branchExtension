@@ -16,11 +16,14 @@
       </div>
       <div class="top-right-icons">
         <div class="save-button-container">
-          <button class="save-button">save tree to drive</button>
+          <button id="export-btn" class="save-button">export tree</button>
+          <button id="rename-btn" class="save-button">rename tree</button>
+          <button id="save-btn" class="save-button">save tree to drive</button>
         </div>
       </div>
     </div>
     <hr class="branch-divider" />
+    <p id="current-branch-name">default tree</p>
     <div id="tree-content"></div>
     <script src="treeRender.js"></script>
   </body>

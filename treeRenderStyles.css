@@ -1,3 +1,7 @@
+body {
+  text-align: left;
+}
+
 #hover-popup {
   display: none;
   position: fixed;
@@ -25,6 +29,7 @@
   display: flex;
   justify-content: flex-start;
   margin-bottom: 10px;
+  gap: 10px;
 }
 .save-button {
   background-color: #31312f;
@@ -74,4 +79,13 @@ ul {
 a {
   text-decoration: none;
   color: #333;
+}
+
+#current-branch-name {
+  font-size: 16px;
+  color: #2a543b;
+  font-weight: bold;
+  font-family: "Fira Sans", sans-serif;
+  text-align: left;
+  margin: 0;
 }

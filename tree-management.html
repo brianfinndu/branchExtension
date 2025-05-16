@@ -39,8 +39,8 @@
         margin-bottom: 10px;
       }
       .start-button {
-        background-color: var(--color-tertiary,#31312f);
-        color: var(--color-light-text,#f5f5f5);
+        background-color: var(--color-tertiary, #31312f);
+        color: var(--color-light-text, #f5f5f5);
         border: none;
         border-radius: 10px;
         padding: 10px 20px;
@@ -53,6 +53,9 @@
         background-color: var(--color-secondary, #b3aba5);
         color: #444;
       }
+      .card-template {
+        display: none;
+      }
       .card {
         border-radius: 10px;
         display: flex;
@@ -61,7 +64,7 @@
         margin-top: 12px;
         margin-bottom: 12px;
         padding: 16px;
-        background: var(--color-light-text,#f5f5f5);
+        background: var(--color-light-text, #f5f5f5);
         border-radius: 8px;
         flex-wrap: wrap;
         color: var(--color-secondary, #b3aba5);
@@ -92,8 +95,8 @@
         font-size: 14px;
         border: none;
         border-radius: 6px;
-        background-color: var(--color-tertiary,#31312f);
-        color: var(--color-light-text,#f5f5f5);
+        background-color: var(--color-tertiary, #31312f);
+        color: var(--color-light-text, #f5f5f5);
         font-family: "Fira Sans", sans-serif;
         cursor: pointer;
         transition: background-color 0.5s ease-in-out;
@@ -124,21 +127,22 @@
       <div class="start-button-container">
         <button class="start-button">start new tree</button>
       </div>
-
-      <!-- Example Tree Card -->
-      <div class="card">
-        <div class="text-content">
-          <div class="title">TREE NAME</div>
-          <div class="timestamp">Last change: 5/4/25</div>
-        </div>
-        <div class="button-grid">
-          <button class="rename-tree-btn">rename</button>
-          <button>delete</button>
-          <button>set active</button>
-          <button>export</button>
+      <div id="card-container">
+        <!-- Example Tree Card -->
+        <div class="card-template">
+          <div class="text-content">
+            <div class="title">TREE NAME</div>
+            <div class="timestamp">Last change: 5/4/25</div>
+          </div>
+          <div class="button-grid">
+            <button>rename</button>
+            <button>delete</button>
+            <button>set active</button>
+            <button>export</button>
+          </div>
         </div>
       </div>
     </div>
-    <script src="treeManagement.js"></script>
+    <script src="tree-management.js"></script>
   </body>
 </html>
